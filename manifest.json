@@ -1,0 +1,26 @@
+{
+  "name": "Programme Major de Promo",
+  "short_name": "Programme Major",
+  "description": "Dashboard, suivi des cours, analytics QCM, planning et bilan personnel.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDEFEC",
+  "theme_color": "#2F6F63",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
