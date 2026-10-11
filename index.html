@@ -421,6 +421,18 @@
   .journal-item .ji-top{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-bottom:3px;}
   .journal-item .ji-type{font-weight:600;color:var(--teal);}
   .journal-item .ji-del{cursor:pointer;opacity:0.5;}
+
+  .jday{margin-bottom:8px;border:1px solid var(--paper-line);border-radius:8px;overflow:hidden;}
+  .jday-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;background:var(--teal-soft);cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink);}
+  .jday-head .jd-date{font-weight:600;text-transform:capitalize;}
+  .jday-head .jd-meta{color:var(--ink-soft);display:flex;gap:6px;align-items:center;}
+  .jday-head .jd-count{background:var(--teal);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;}
+  .jday-body{padding:6px 6px 0;display:none;}
+  .jday.open .jday-body{display:block;}
+  .jday.open .jd-chev{transform:rotate(180deg);}
+  .jd-chev{display:inline-block;transition:transform .15s;}
+  .journal-filter{display:flex;gap:6px;margin-bottom:8px;}
+  .journal-filter select{flex:1;padding:6px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-size:11.5px;background:var(--bg);font-family:'IBM Plex Sans',sans-serif;}
   .journal-add{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
   .journal-add-row{display:flex;gap:6px;}
   .journal-add-row input, .journal-add-row select{flex:1;padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;background:var(--bg);}
@@ -512,6 +524,15 @@
       </div>
       <input type="file" id="importFile" accept="application/json" style="display:none;">
       <p class="plan-note">Exporte régulièrement (un fichier .json) pour ne rien perdre si tu changes de téléphone, vides le cache, ou réinstalles l'app. Importer remplace toutes les données actuelles.</p>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">🔔 Rappels de révision</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="notifBtn" class="add-btn" style="flex:1;">🔔 Activer les rappels</button>
+        <input type="time" id="notifTime" value="08:00" style="padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);background:var(--bg);font-size:12px;">
+      </div>
+      <p class="plan-note" id="notifStatus">Reçois une notification quand des révisions (J+3, J+7…) sont dues ou en retard. Installe d'abord l'app sur l'écran d'accueil pour de meilleurs résultats.</p>
     </div>
   </div>
 
@@ -1897,6 +1918,8 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e)=>{
    ========================================================= */
 let stages = [];
 let stageExpanded = {};
+let journalDayOpen = {};
+let journalFilter = {};
 const JOURNAL_TYPES = ['Journal quotidien', 'Acte observé', 'Acte réalisé', 'Situation clinique', 'Transmission'];
 
 function loadStages(){
@@ -1947,11 +1970,31 @@ function buildStageCard(stage){
   card.className = 'course-card ' + status + (stageExpanded[stage.id] ? ' expanded' : '');
 
   const journalOptions = JOURNAL_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');
-  const journalHtml = stage.journal.slice().sort((a,b)=> b.date.localeCompare(a.date)).map(j=>`
-    <div class="journal-item">
-      <div class="ji-top"><span><span class="ji-type">${j.type}</span> · ${fmtShort(j.date)}</span><span class="ji-del" data-jdel="${stage.id}|${j.id}">✕</span></div>
-      <div>${j.texte.replace(/</g,'&lt;')}</div>
-    </div>`).join('') || '<div class="dash-empty">Rien noté pour l\'instant.</div>';
+  const jFilter = journalFilter[stage.id] || '';
+  const fmtLong = ds => { try{ return new Date(ds+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }catch(e){ return ds; } };
+  const entries = stage.journal.filter(j=> !jFilter || j.type===jFilter);
+  const groups = {};
+  entries.forEach(j=>{ (groups[j.date] = groups[j.date] || []).push(j); });
+  const days = Object.keys(groups).sort((a,b)=> b.localeCompare(a));
+  const journalHtml = days.map(d=>{
+    const key = stage.id+'|'+d;
+    const open = (journalDayOpen[key] !== undefined) ? journalDayOpen[key] : true;
+    const items = groups[d].slice().sort((a,b)=> a.id.localeCompare(b.id));
+    const types = [...new Set(items.map(j=>j.type))].join(' · ');
+    return `<div class="jday ${open?'open':''}">
+      <div class="jday-head" data-jdaytoggle="${key}">
+        <span class="jd-date">${fmtLong(d)}</span>
+        <span class="jd-meta"><span>${types}</span><span class="jd-count">${items.length}</span><span class="jd-chev">▾</span></span>
+      </div>
+      <div class="jday-body">${items.map(j=>`
+        <div class="journal-item">
+          <div class="ji-top"><span class="ji-type">${j.type}</span><span class="ji-del" data-jdel="${stage.id}|${j.id}">✕</span></div>
+          <div>${j.texte.replace(/</g,'&lt;')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('') || `<div class="dash-empty">${jFilter ? 'Aucune entrée de ce type.' : 'Rien noté pour l\'instant.'}</div>`;
+  const filterHtml = stage.journal.length>1 ? `<div class="journal-filter"><select data-jfilter="${stage.id}"><option value="">Tous les types (${stage.journal.length})</option>${JOURNAL_TYPES.map(t=>`<option value="${t}" ${t===jFilter?'selected':''}>${t}</option>`).join('')}</select></div>` : '';
 
   const questionsHtml = stage.questions.map(q=>`
     <div class="question-item ${q.done?'done':''}">
@@ -1989,6 +2032,7 @@ function buildStageCard(stage){
           <textarea class="jTexte" placeholder="Ce qui s'est passé, ce que tu as observé ou fait..."></textarea>
           <button class="add-btn" data-jaddstage="${stage.id}">+ Ajouter au journal</button>
         </div>
+        ${filterHtml}
         ${journalHtml}
       </div>
 
@@ -2036,6 +2080,19 @@ function attachStageCardEvents(box){
       stage[area.dataset.stagefield] = e.target.value;
     });
     area.addEventListener('blur', ()=> saveStages());
+  });
+  box.querySelectorAll('[data-jdaytoggle]').forEach(h=>{
+    h.onclick = (e)=>{
+      e.stopPropagation();
+      const k = h.dataset.jdaytoggle;
+      const wasOpen = h.parentElement.classList.contains('open');
+      journalDayOpen[k] = !wasOpen;
+      h.parentElement.classList.toggle('open', !wasOpen);
+    };
+  });
+  box.querySelectorAll('[data-jfilter]').forEach(sel=>{
+    sel.onclick = e=> e.stopPropagation();
+    sel.onchange = (e)=>{ e.stopPropagation(); journalFilter[sel.dataset.jfilter] = sel.value; renderStages(); };
   });
   box.querySelectorAll('[data-jaddstage]').forEach(btn=>{
     btn.onclick = (e)=>{
@@ -2551,6 +2608,64 @@ loadTD();
 loadQCM();
 loadHeader();
 render();
+</script>
+
+<script>
+/* ===== Rappels (notifications locales) ===== */
+(function(){
+  const btn = document.getElementById('notifBtn');
+  const timeInput = document.getElementById('notifTime');
+  const status = document.getElementById('notifStatus');
+  if(!btn) return;
+  const supported = 'Notification' in window && 'serviceWorker' in navigator;
+  const get = (k,d)=>{ try{ return localStorage.getItem(k) ?? d; }catch(e){ return d; } };
+  const set = (k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+
+  function refreshUI(){
+    if(!supported){ btn.disabled = true; btn.textContent = 'Non supporté sur ce navigateur'; return; }
+    const on = get('notifEnabled','0')==='1' && Notification.permission==='granted';
+    btn.textContent = on ? '🔕 Désactiver les rappels' : '🔔 Activer les rappels';
+    timeInput.value = get('notifTime','08:00');
+    if(Notification.permission==='denied') status.textContent = 'Notifications bloquées : autorise-les dans les réglages du navigateur / de l\'app.';
+  }
+
+  async function checkReminders(force){
+    if(!supported || get('notifEnabled','0')!=='1' || Notification.permission!=='granted') return;
+    const today = todayStr();
+    if(!force && get('notifLastDay','')===today) return;
+    const now = new Date();
+    const [h,m] = get('notifTime','08:00').split(':').map(Number);
+    if(!force && (now.getHours()*60+now.getMinutes()) < h*60+m) return;
+    let overdue=0, due=0;
+    courses.forEach(c=>{ const u=courseUrgency(c); if(u.status==='overdue') overdue++; else if(u.status==='due') due++; });
+    if(!force && overdue+due===0) return;
+    const body = (overdue+due===0) ? 'Aucune révision due aujourd\'hui. 👌'
+      : [due?due+' à réviser aujourd\'hui':'', overdue?overdue+' en retard':''].filter(Boolean).join(' · ');
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification('Programme Major — Révisions', { body, icon:'icon-192.png', badge:'icon-192.png', tag:'revisions-du-jour', data:{url:'./'} });
+      set('notifLastDay', today);
+    }catch(e){ console.error(e); }
+  }
+
+  btn.onclick = async ()=>{
+    if(!supported) return;
+    const on = get('notifEnabled','0')==='1' && Notification.permission==='granted';
+    if(on){ set('notifEnabled','0'); refreshUI(); status.textContent = 'Rappels désactivés.'; return; }
+    const perm = await Notification.requestPermission();
+    if(perm==='granted'){
+      set('notifEnabled','1'); set('notifLastDay','');
+      refreshUI(); status.textContent = 'Rappels activés. Une notification de test vient d\'être envoyée.';
+      checkReminders(true);
+    } else { refreshUI(); }
+  };
+  timeInput.onchange = ()=>{ set('notifTime', timeInput.value || '08:00'); set('notifLastDay',''); checkReminders(false); };
+
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') checkReminders(false); });
+  setInterval(()=>checkReminders(false), 15*60*1000);
+  window.addEventListener('load', ()=> setTimeout(()=>checkReminders(false), 1500));
+  refreshUI();
+})();
 </script>
 
 <script>
