@@ -1,4 +1,4 @@
-const CACHE_NAME = "programme-major-v1";
+const CACHE_NAME = "programme-major-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -42,6 +42,16 @@ self.addEventListener("fetch", event => {
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         return response;
       }).catch(() => caches.match("./index.html"));
+    })
+  );
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      for (const c of list) { if ("focus" in c) return c.focus(); }
+      return self.clients.openWindow("./");
     })
   );
 });

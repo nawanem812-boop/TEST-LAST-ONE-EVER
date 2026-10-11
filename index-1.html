@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2F6F63">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Programme Major">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+<title>Programme Major de Promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EDEFEC;
+    --paper:#FFFFFF;
+    --paper-line:#DDE1DC;
+    --ink:#1E2422;
+    --ink-soft:#5B655F;
+    --teal:#2F6F63;
+    --teal-soft:#E4EEEA;
+    --amber:#B8792E;
+    --amber-soft:#F5EADA;
+    --brick:#A94A34;
+    --brick-soft:#F5E4DE;
+    --shadow: 0 1px 2px rgba(30,36,34,0.06), 0 4px 14px rgba(30,36,34,0.05);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:16px 14px 0;}
+  @media (min-width:720px){
+    .wrap{padding:20px 32px 0;}
+    .dash-grid{grid-template-columns:repeat(4,1fr);}
+    .plan-row2{grid-template-columns:1fr 1fr 1fr;}
+    .add-fields{flex-direction:row;flex-wrap:wrap;}
+    .add-fields input{flex:1;min-width:160px;}
+    .add-btn{flex-basis:100%;}
+    #courseList, #qcmChapterList{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0 12px;align-content:start;}
+    #courseList .group-header, #qcmChapterList .group-header{grid-column:1/-1;}
+    .tabs{flex-wrap:nowrap;}
+    .tab{flex:1 1 auto;}
+  }
+  @media (min-width:1100px){
+    .wrap{padding:24px 48px 0;}
+  }
+
+  .chart-header{
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:10px;
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+    margin-bottom:14px;
+    position:relative;
+  }
+  .chart-header::before{
+    content:"DOSSIER — PILOTAGE DE L'ANNÉE";
+    position:absolute;
+    top:-9px; left:16px;
+    background:var(--teal);
+    color:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    letter-spacing:0.11em;
+    padding:3px 8px;
+    border-radius:4px;
+    font-weight:600;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:22px;
+    margin:8px 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.5;}
+  .field-row{display:flex;gap:10px;margin-top:8px;}
+  .field{flex:1;}
+  .field label{
+    display:block;font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;letter-spacing:0.06em;color:var(--ink-soft);
+    text-transform:uppercase;margin-bottom:3px;
+  }
+  .field input{
+    width:100%;border:none;border-bottom:1.5px solid var(--paper-line);
+    background:transparent;font-family:'IBM Plex Mono',monospace;
+    font-size:13px;padding:3px 0;color:var(--ink);
+  }
+  .field input:focus{outline:none;border-bottom-color:var(--teal);}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .tab{
+    flex:1 1 29%;padding:9px 4px;text-align:center;
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:8px;font-size:12px;font-weight:600;
+    cursor:pointer;color:var(--ink-soft);transition:all .15s;
+  }
+  .tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+  .daynav{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+  .daybtn{
+    flex-shrink:0;padding:7px 12px;border-radius:20px;
+    border:1px solid var(--paper-line);background:var(--paper);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    color:var(--ink-soft);cursor:pointer;
+  }
+  .daybtn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  .view{display:none;}
+  .view.active{display:block;}
+  .day-label{
+    font-family:'Fraunces',serif;font-size:18px;font-weight:600;
+    margin:2px 0 10px;
+  }
+  .hint{font-size:11px;color:var(--ink-soft);margin:-4px 0 10px;font-style:italic;}
+  .block{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:9px;padding:11px 13px;margin-bottom:8px;
+    display:flex;align-items:flex-start;gap:11px;box-shadow:var(--shadow);
+    cursor:pointer;
+  }
+  .block:active{background:var(--teal-soft);}
+  .block .time{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--teal);white-space:nowrap;padding-top:1px;min-width:78px;
+  }
+  .block .title{font-size:13.5px;font-weight:500;line-height:1.4;}
+  .block .info-dot{margin-left:auto;color:var(--paper-line);font-size:15px;flex-shrink:0;}
+  .block.has-detail .info-dot{color:var(--teal);}
+
+  .track-block{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:9px;padding:11px 13px;margin-bottom:7px;
+    display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);
+  }
+  .track-block.checked{background:var(--teal-soft);border-color:var(--teal);}
+  .checkbox{
+    width:20px;height:20px;border-radius:5px;border:1.8px solid var(--paper-line);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:#fff;cursor:pointer;
+  }
+  .track-block.checked .checkbox{background:var(--teal);border-color:var(--teal);}
+  .track-info{flex:1;cursor:pointer;}
+  .track-block .time{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft);}
+  .track-block .title{font-size:13px;font-weight:500;}
+  .track-block.checked .title{color:var(--teal);}
+  .track-block .info-dot{color:var(--teal);font-size:15px;flex-shrink:0;}
+
+  .panel{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow);
+  }
+  .panel-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.07em;
+    color:var(--ink-soft);text-transform:uppercase;margin-bottom:8px;font-weight:600;
+  }
+  .scale{display:flex;gap:6px;}
+  .scale-btn{
+    flex:1;padding:9px 0;text-align:center;border-radius:7px;
+    border:1.5px solid var(--paper-line);background:var(--bg);
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;
+    cursor:pointer;color:var(--ink-soft);
+  }
+  .scale-btn.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+  .sommeil-row{display:flex;align-items:center;gap:10px;}
+  .sommeil-row input{
+    width:60px;padding:6px 8px;border-radius:6px;border:1.5px solid var(--paper-line);
+    font-family:'IBM Plex Mono',monospace;font-size:14px;text-align:center;
+  }
+  textarea{
+    width:100%;border:1.5px solid var(--paper-line);border-radius:7px;
+    padding:9px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;
+    resize:vertical;min-height:52px;color:var(--ink);background:var(--bg);
+  }
+  textarea:focus,.scale-btn:focus{outline:none;}
+  .panel.brick .panel-label{color:var(--brick);}
+  .panel.brick textarea{background:var(--brick-soft);border-color:#e2c3b6;}
+  .panel.teal .panel-label{color:var(--teal);}
+  .panel.teal textarea{background:var(--teal-soft);border-color:#c3ddd4;}
+
+  .saved-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);
+    text-align:center;padding:6px 0 0;opacity:0;transition:opacity .3s;
+  }
+  .saved-tag.show{opacity:1;}
+
+  .bilan-row{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:9px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);
+  }
+  .bilan-top{display:flex;justify-content:space-between;align-items:center;}
+  .bilan-day{font-family:'Fraunces',serif;font-weight:600;font-size:15px;}
+  .bilan-pct{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;}
+  .barbg{height:6px;background:var(--paper-line);border-radius:3px;margin-top:7px;overflow:hidden;}
+  .barfill{height:100%;background:var(--teal);border-radius:3px;}
+  .bilan-meta{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .bilan-note{font-size:11.5px;color:var(--brick);margin-top:6px;line-height:1.4;}
+
+  /* Méthodes / Conseils cards */
+  .m-card{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);
+    border-left:3px solid var(--teal);
+  }
+  .m-card h3{font-family:'Fraunces',serif;font-size:15.5px;margin:0 0 8px;font-weight:600;}
+  .m-card .m-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);
+    text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:3px;}
+  .m-card p{font-size:12.8px;line-height:1.55;margin:4px 0;color:var(--ink);}
+  .m-card p b{color:var(--ink);}
+  .m-card.rule{border-left-color:var(--amber);}
+  .c-card{
+    background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);
+  }
+  .c-card h3{font-family:'Fraunces',serif;font-size:15.5px;margin:0 0 8px;font-weight:600;}
+  .c-card p{font-size:12.8px;line-height:1.55;margin:5px 0;color:var(--ink);}
+  .c-card ul{margin:6px 0;padding-left:18px;font-size:12.8px;line-height:1.6;}
+  .flow-line{font-family:'IBM Plex Mono',monospace;background:var(--teal-soft);padding:8px 10px;border-radius:6px;font-size:11.5px;margin:6px 0;color:var(--teal);}
+
+  /* Modal */
+  .overlay{
+    display:none;position:fixed;inset:0;background:rgba(20,26,24,0.5);
+    z-index:100;align-items:flex-end;justify-content:center;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--paper);border-radius:16px 16px 0 0;padding:20px 20px 26px;
+    max-width:640px;width:100%;max-height:75vh;overflow-y:auto;
+    box-shadow:0 -4px 24px rgba(0,0,0,0.15);
+  }
+  .modal-time{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal);font-weight:600;}
+  .modal-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin:6px 0 12px;}
+  .modal-detail{font-size:13.5px;line-height:1.65;color:var(--ink);white-space:pre-line;}
+  .modal-close{
+    display:block;margin:18px auto 0;padding:9px 24px;border-radius:20px;
+    background:var(--ink);color:#fff;border:none;font-family:'IBM Plex Sans',sans-serif;
+    font-size:13px;font-weight:600;cursor:pointer;
+  }
+
+  /* ===== Dashboard "Aujourd'hui" ===== */
+  .dash-date{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;
+    color:var(--teal);text-transform:uppercase;font-weight:600;margin-bottom:2px;
+  }
+  .dash-card{background:var(--paper);border:1px solid var(--paper-line);border-radius:11px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .dash-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.07em;color:var(--ink-soft);text-transform:uppercase;font-weight:600;margin-bottom:8px;}
+  .dash-goal-input{width:100%;border:none;background:transparent;font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--ink);padding:2px 0;}
+  .dash-goal-input:focus{outline:none;}
+  .dash-goal-input::placeholder{color:var(--ink-soft);font-weight:500;}
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .dash-stat{background:var(--paper);border:1px solid var(--paper-line);border-radius:11px;padding:12px 14px;box-shadow:var(--shadow);}
+  .dash-stat .n{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--ink);}
+  .dash-stat .l{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
+  .dash-stat.warn .n{color:var(--brick);}
+  .dash-stat.amber .n{color:var(--amber);}
+  .dash-stat.teal .n{color:var(--teal);}
+  .dash-work-row{display:flex;align-items:center;gap:8px;}
+  .dash-work-row input{width:56px;padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Mono',monospace;font-size:14px;text-align:center;background:var(--bg);}
+  .dash-work-row span{font-size:12px;color:var(--ink-soft);}
+  .dash-work-row .slash{color:var(--paper-line);font-weight:600;}
+  .dash-list-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:7px;font-size:12px;margin-bottom:6px;}
+  .dash-list-item .nm{font-weight:500;}
+  .dash-list-item .st{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;}
+  .dash-list-item .st.overdue{background:var(--brick-soft);color:var(--brick);}
+  .dash-list-item .st.due{background:var(--amber-soft);color:var(--amber);}
+  .dash-empty{font-size:12px;color:var(--ink-soft);font-style:italic;padding:4px 2px;}
+
+  /* ===== Suivi (Course tracking J0-J3-J7-J30) ===== */
+  .stats-bar{display:flex;gap:8px;margin-bottom:14px;}
+  .stat{flex:1;background:var(--paper);border:1px solid var(--paper-line);border-radius:9px;padding:9px 6px;text-align:center;box-shadow:var(--shadow);}
+  .stat .n{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
+  .stat .l{font-size:9.5px;color:var(--ink-soft);margin-top:1px;}
+  .stat.overdue .n{color:var(--brick);}
+  .stat.due .n{color:var(--amber);}
+  .stat.total .n{color:var(--teal);}
+  .add-panel{background:var(--paper);border:1px solid var(--paper-line);border-radius:10px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow);}
+  .add-panel-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.07em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:9px;font-weight:600;}
+  .add-fields{display:flex;flex-direction:column;gap:8px;}
+  .add-fields input, .add-fields select{padding:9px 11px;border-radius:7px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--ink);}
+  .add-fields input:focus, .add-fields select:focus{outline:none;border-color:var(--teal);}
+  .add-btn{margin-top:2px;padding:10px;border-radius:7px;border:none;background:var(--teal);color:#fff;font-weight:600;font-size:13px;cursor:pointer;}
+  .search-input{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--paper-line);background:var(--paper);font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;margin-bottom:10px;box-shadow:var(--shadow);}
+  .search-input:focus{outline:none;border-color:var(--teal);}
+  .filter-row{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;}
+  .filter-chip{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--paper-line);background:var(--paper);font-size:11.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:'IBM Plex Mono',monospace;}
+  .filter-chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .view-toggle-row{display:flex;justify-content:flex-end;margin-bottom:12px;}
+  .view-toggle{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:var(--ink-soft);background:var(--paper);border:1px solid var(--paper-line);border-radius:20px;padding:5px 11px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .view-toggle.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .group-header{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;margin:16px 4px 8px;display:flex;justify-content:space-between;}
+  .group-header:first-child{margin-top:0;}
+  .group-header .cnt{color:var(--teal);}
+  .course-card{background:var(--paper);border:1px solid var(--paper-line);border-radius:11px;margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;}
+  .course-card.overdue{border-left:3px solid var(--brick);}
+  .course-card.due{border-left:3px solid var(--amber);}
+  .course-card.ontrack{border-left:3px solid var(--teal);}
+  .course-card.complete{border-left:3px solid #7C8B84;}
+  .course-header{padding:13px 15px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer;}
+  .course-name{font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;line-height:1.3;}
+  .course-ue{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;}
+  .course-meta-line{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;}
+  .chev{color:var(--ink-soft);font-size:12px;flex-shrink:0;margin-top:3px;transition:transform .15s;}
+  .course-card.expanded .chev{transform:rotate(180deg);}
+  .badge-complete{font-size:9px;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:8px;font-weight:600;}
+  .course-body{display:none;padding:0 15px 15px;}
+  .course-card.expanded .course-body{display:block;}
+  .icon-btn{color:var(--ink-soft);font-size:14px;cursor:pointer;opacity:0.55;padding:3px 4px;}
+  .icon-btn:active{opacity:1;}
+  .edit-fields{display:flex;flex-direction:column;gap:6px;flex:1;}
+  .edit-fields input{padding:7px 9px;border-radius:6px;border:1.5px solid var(--teal);font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;background:var(--bg);}
+  .edit-fields input:focus{outline:none;}
+  .edit-actions{display:flex;gap:6px;margin-top:2px;}
+  .edit-actions button{flex:1;padding:6px;border-radius:6px;border:none;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;}
+  .edit-save{background:var(--teal);color:#fff;}
+  .edit-cancel{background:var(--paper-line);color:var(--ink);}
+  .checkpoints{display:flex;gap:6px;margin:8px 0 12px;}
+  .cp{flex:1;padding:8px 3px;border-radius:8px;border:1.5px solid var(--paper-line);background:var(--bg);text-align:center;cursor:pointer;}
+  .cp-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;color:var(--ink-soft);}
+  .cp-date{font-size:9px;color:var(--ink-soft);margin-top:2px;}
+  .cp.done{background:var(--teal);border-color:var(--teal);}
+  .cp.done .cp-label, .cp.done .cp-date{color:#fff;}
+  .cp.due{background:var(--amber-soft);border-color:var(--amber);}
+  .cp.due .cp-label{color:var(--amber);}
+  .cp.overdue{background:var(--brick-soft);border-color:var(--brick);}
+  .cp.overdue .cp-label{color:var(--brick);}
+  .revision-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-bottom:8px;}
+  .revision-count b{color:var(--ink);}
+  .rev-list{display:flex;flex-direction:column;gap:5px;margin-bottom:9px;}
+  .rev-item{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;padding:6px 9px;background:var(--bg);border-radius:6px;}
+  .rev-item .rev-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;}
+  .rev-item .rev-method{font-weight:600;color:var(--ink);}
+  .rev-item .rev-del{color:var(--ink-soft);cursor:pointer;opacity:0.5;font-size:12px;}
+  .rev-add{display:flex;gap:6px;margin-bottom:12px;}
+  .rev-add select, .rev-add input[type=date]{padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;background:var(--bg);flex:1;}
+  .rev-add button{padding:7px 12px;border-radius:6px;border:none;background:var(--teal);color:#fff;font-weight:600;font-size:12px;cursor:pointer;flex-shrink:0;}
+  .notes-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.06em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:5px;font-weight:600;}
+  .notes-area{width:100%;border:1.5px solid var(--paper-line);border-radius:7px;padding:8px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;resize:vertical;min-height:44px;background:var(--bg);color:var(--ink);}
+  .notes-area:focus{outline:none;border-color:var(--teal);}
+  .empty{text-align:center;padding:30px 10px;color:var(--ink-soft);font-size:13px;}
+
+  /* ===== Planning generator ===== */
+  .plan-form{display:flex;flex-direction:column;gap:10px;}
+  .plan-field{display:flex;flex-direction:column;gap:4px;}
+  .plan-field label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--ink-soft);text-transform:uppercase;font-weight:600;}
+  .plan-field input{padding:9px 11px;border-radius:7px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Sans',sans-serif;font-size:13px;background:var(--bg);}
+  .plan-field input:focus{outline:none;border-color:var(--teal);}
+  .plan-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .plan-gen-btn{margin-top:4px;padding:11px;border-radius:8px;border:none;background:var(--ink);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;}
+  .plan-note{font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
+  .plan-block{background:var(--paper);border:1px solid var(--paper-line);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;box-shadow:var(--shadow);border-left:3px solid var(--teal);}
+  .plan-block.overdue{border-left-color:var(--brick);}
+  .plan-block.due{border-left-color:var(--amber);}
+  .plan-block.new{border-left-color:#6B5B8A;}
+  .plan-block.qcm{border-left-color:#3D6B93;}
+  .plan-time{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--ink-soft);white-space:nowrap;min-width:92px;}
+  .plan-title{font-size:13px;font-weight:500;}
+  .plan-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;margin-top:2px;}
+  .plan-overflow{background:var(--brick-soft);border:1px dashed var(--brick);border-radius:10px;padding:11px 13px;margin-top:6px;font-size:11.5px;color:var(--brick);line-height:1.5;}
+
+  /* ===== QCM Analytics ===== */
+  .ue-row{background:var(--paper);border:1px solid var(--paper-line);border-radius:9px;padding:11px 13px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .ue-top{display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin-bottom:6px;}
+  .ue-top b{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .ue-bar-bg{height:7px;background:var(--paper-line);border-radius:4px;overflow:hidden;}
+  .ue-bar-fill{height:100%;border-radius:4px;}
+  .chapter-card{background:var(--paper);border:1px solid var(--paper-line);border-radius:10px;padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow);border-left:3px solid var(--teal);}
+  .chapter-card.weak{border-left-color:var(--brick);}
+  .chapter-card.fragile{border-left-color:var(--amber);}
+  .chapter-top{display:flex;justify-content:space-between;align-items:center;}
+  .chapter-name{font-family:'Fraunces',serif;font-size:14.5px;font-weight:600;}
+  .chapter-pct{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;}
+  .chapter-pct.weak{color:var(--brick);}
+  .chapter-pct.fragile{color:var(--amber);}
+  .chapter-pct.strong{color:var(--teal);}
+  .chapter-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-top:4px;}
+  .tag-cloud{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag-chip{background:var(--brick-soft);color:var(--brick);font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:5px 10px;border-radius:16px;}
+  .tag-chip .cnt{opacity:0.7;margin-left:3px;}
+  .qcm-journal-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:7px;font-size:11.5px;margin-bottom:6px;}
+  .qcm-journal-item .qj-del{color:var(--ink-soft);cursor:pointer;opacity:0.5;font-size:12px;}
+  .qcm-badge{font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:1px 6px;border-radius:8px;font-weight:600;}
+  .qcm-badge.weak{background:var(--brick-soft);color:var(--brick);}
+  .qcm-badge.fragile{background:var(--amber-soft);color:var(--amber);}
+  .qcm-badge.strong{background:var(--teal-soft);color:var(--teal);}
+
+  /* ===== Next Action ===== */
+  .next-action-card{
+    background:var(--ink);color:#fff;border-radius:14px;padding:18px 18px 16px;
+    margin-bottom:16px;box-shadow:0 4px 20px rgba(30,36,34,0.18);position:relative;
+  }
+  .na-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#9FB0A8;font-weight:600;margin-bottom:8px;}
+  .na-title{font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1.3;margin-bottom:4px;}
+  .na-reason{font-size:12.5px;color:#C7D1CB;margin-bottom:10px;line-height:1.5;}
+  .na-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9FB0A8;margin-bottom:14px;}
+  .na-actions{display:flex;gap:8px;}
+  .na-btn{flex:1;padding:11px;border-radius:8px;border:none;font-weight:600;font-size:13px;cursor:pointer;}
+  .na-btn.primary{background:var(--teal-soft);color:var(--teal);}
+  .na-btn.secondary{background:rgba(255,255,255,0.1);color:#fff;}
+  .next-action-card.empty{background:var(--teal-soft);color:var(--ink);}
+  .next-action-card.empty .na-tag{color:var(--teal);}
+  .next-action-card.empty .na-reason{color:var(--ink-soft);}
+  .block-edit-controls{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+  .block-edit-controls .icon-btn{font-size:13px;padding:4px 5px;opacity:0.7;}
+  .block.edit-mode-form{cursor:default;background:var(--teal-soft);}
+  .tag-chip.linked{background:var(--teal-soft);color:var(--teal);}
+  .stage-section{margin-top:14px;}
+  .stage-section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.07em;color:var(--ink-soft);text-transform:uppercase;font-weight:600;margin-bottom:8px;}
+  .journal-item{background:var(--bg);border-radius:7px;padding:8px 10px;margin-bottom:6px;font-size:12px;}
+  .journal-item .ji-top{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-bottom:3px;}
+  .journal-item .ji-type{font-weight:600;color:var(--teal);}
+  .journal-item .ji-del{cursor:pointer;opacity:0.5;}
+
+  .jday{margin-bottom:8px;border:1px solid var(--paper-line);border-radius:8px;overflow:hidden;}
+  .jday-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;background:var(--teal-soft);cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink);}
+  .jday-head .jd-date{font-weight:600;text-transform:capitalize;}
+  .jday-head .jd-meta{color:var(--ink-soft);display:flex;gap:6px;align-items:center;}
+  .jday-head .jd-count{background:var(--teal);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;}
+  .jday-body{padding:6px 6px 0;display:none;}
+  .jday.open .jday-body{display:block;}
+  .jday.open .jd-chev{transform:rotate(180deg);}
+  .jd-chev{display:inline-block;transition:transform .15s;}
+  .journal-filter{display:flex;gap:6px;margin-bottom:8px;}
+  .journal-filter select{flex:1;padding:6px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-size:11.5px;background:var(--bg);font-family:'IBM Plex Sans',sans-serif;}
+  .journal-add{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+  .journal-add-row{display:flex;gap:6px;}
+  .journal-add-row input, .journal-add-row select{flex:1;padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;background:var(--bg);}
+  .journal-add textarea{width:100%;min-height:44px;}
+  .question-item{display:flex;align-items:center;gap:9px;background:var(--bg);border-radius:7px;padding:8px 10px;margin-bottom:6px;font-size:12px;}
+  .question-item.done .q-text{text-decoration:line-through;color:var(--ink-soft);}
+  .question-item .q-text{flex:1;}
+  .question-item .q-del{cursor:pointer;opacity:0.5;font-size:12px;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="chart-header">
+    <h1>Programme Major de Promo</h1>
+    <p class="subtitle">Dashboard, suivi des cours, QCM et planning — tout au même endroit pour piloter l'année sans avoir à y réfléchir chaque matin.</p>
+    <div class="field-row">
+      <div class="field">
+        <label>Semaine du</label>
+        <input type="date" id="weekStart">
+      </div>
+      <div class="field">
+        <label>Objectif du test</label>
+        <input type="text" id="testGoal" placeholder="ex: tenir 7j sans dérapage">
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-view="dashboard">Aujourd'hui</div>
+    <div class="tab" data-view="schedule">Emploi du temps</div>
+    <div class="tab" data-view="tracker">Tracker</div>
+    <div class="tab" data-view="suivi">Suivi Cours</div>
+    <div class="tab" data-view="td">TD</div>
+    <div class="tab" data-view="stages">Stages</div>
+    <div class="tab" data-view="qcm">QCM</div>
+    <div class="tab" data-view="planning">Planning</div>
+    <div class="tab" data-view="bilan">Bilan</div>
+    <div class="tab" data-view="methodes">Méthodes</div>
+    <div class="tab" data-view="conseils">Conseils</div>
+  </div>
+
+  <div class="daynav" id="daynav"></div>
+
+  <div class="view active" id="view-dashboard">
+    <div id="nextActionBox"></div>
+    <div class="dash-date" id="dashDate"></div>
+    <div class="day-label" style="margin-bottom:12px;">Tableau de bord</div>
+
+    <div class="dash-card">
+      <div class="dash-label">🎯 Objectif du jour</div>
+      <input type="text" class="dash-goal-input" id="dashGoal" placeholder="ex: 3 chapitres + 120 QCM">
+    </div>
+
+    <div class="dash-grid" style="margin-bottom:12px;">
+      <div class="dash-stat" id="dashUEStat">
+        <div class="n" id="dashUE">—</div>
+        <div class="l">📚 UE prioritaire</div>
+      </div>
+      <div class="dash-stat" id="dashRevStat">
+        <div class="n" id="dashRevCount">0</div>
+        <div class="l">🔁 Révisions dues</div>
+      </div>
+      <div class="dash-stat teal">
+        <div class="n" id="dashStreak">0</div>
+        <div class="l">🔥 Streak (jours)</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-work-row">
+          <input type="number" id="dashWorkDone" min="0" step="0.5" placeholder="0">
+          <span class="slash">/</span>
+          <input type="number" id="dashWorkGoal" min="0" step="0.5" placeholder="6">
+        </div>
+        <div class="l">⏱️ Travail (h)</div>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">Cours à réviser en priorité</div>
+      <div id="dashRevList"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">💾 Sauvegarde</div>
+      <div style="display:flex;gap:8px;">
+        <button id="exportBtn" class="add-btn" style="flex:1;">📤 Exporter</button>
+        <button id="importBtn" class="add-btn" style="flex:1;background:var(--ink);">📥 Importer</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+      <p class="plan-note">Exporte régulièrement (un fichier .json) pour ne rien perdre si tu changes de téléphone, vides le cache, ou réinstalles l'app. Importer remplace toutes les données actuelles.</p>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">🔔 Rappels de révision</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="notifBtn" class="add-btn" style="flex:1;">🔔 Activer les rappels</button>
+        <input type="time" id="notifTime" value="08:00" style="padding:7px 8px;border-radius:6px;border:1.5px solid var(--paper-line);background:var(--bg);font-size:12px;">
+      </div>
+      <p class="plan-note" id="notifStatus">Reçois une notification quand des révisions (J+3, J+7…) sont dues ou en retard. Installe d'abord l'app sur l'écran d'accueil pour de meilleurs résultats.</p>
+    </div>
+  </div>
+
+  <div class="view" id="view-schedule">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+      <div class="day-label" id="sched-day-label"></div>
+      <div style="display:flex;gap:6px;">
+        <div class="view-toggle" id="pdfImportToggle">📄 Importer PDF</div>
+        <div class="view-toggle" id="scheduleEditToggle">✎ Modifier</div>
+      </div>
+    </div>
+    <p class="hint" id="sched-hint">Touchez un bloc pour voir le détail complet.</p>
+
+    <div class="dash-card" id="pdfImportPanel" style="display:none;">
+      <div class="dash-label">📄 Import PDF de l'EDT — expérimental</div>
+      <p class="plan-note" style="margin-top:0;">Fonctionne mieux sur un PDF texte listant les jours et horaires en agenda simple. Les emplois du temps en grille/tableau (Hyperplanning, ADE...) sont souvent mal reconnus — vérifie toujours l'aperçu avant de valider. Les PDF scannés (image) ne sont pas supportés.</p>
+      <input type="file" id="pdfFileInput" accept="application/pdf">
+      <div id="pdfImportStatus" style="margin-top:8px;font-size:11.5px;color:var(--ink-soft);"></div>
+      <div id="pdfPreviewArea"></div>
+    </div>
+
+    <div id="sched-blocks"></div>
+  </div>
+
+  <div class="view" id="view-tracker">
+    <div class="day-label" id="track-day-label"></div>
+    <p class="hint">Cochez pour valider · touchez le texte pour voir le détail.</p>
+    <div id="track-blocks"></div>
+
+    <div class="panel">
+      <div class="panel-label">Énergie du jour</div>
+      <div class="scale" id="energyScale">
+        <div class="scale-btn" data-val="1">1</div>
+        <div class="scale-btn" data-val="2">2</div>
+        <div class="scale-btn" data-val="3">3</div>
+        <div class="scale-btn" data-val="4">4</div>
+        <div class="scale-btn" data-val="5">5</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Sommeil (nuit précédente)</div>
+      <div class="sommeil-row">
+        <input type="number" id="sommeilInput" min="0" max="14" step="0.5" placeholder="0">
+        <span style="font-size:13px;color:var(--ink-soft);">heures</span>
+      </div>
+    </div>
+
+    <div class="panel brick">
+      <div class="panel-label">Ce qui a dérapé</div>
+      <textarea id="derapeInput" placeholder="Quel bloc a sauté ou glissé ? Pourquoi, concrètement ?"></textarea>
+    </div>
+
+    <div class="panel teal">
+      <div class="panel-label">Ce qui a bien marché</div>
+      <textarea id="marcheInput" placeholder="Qu'est-ce qui a tenu sans effort ?"></textarea>
+    </div>
+
+    <div class="saved-tag" id="savedTag">✓ enregistré</div>
+  </div>
+
+  <div class="view" id="view-suivi">
+    <div class="day-label">Suivi des cours</div>
+    <p class="hint">Un cours par carte, avec les 4 jalons de la Méthode 5 (J+0, J+3, J+7, J+30).</p>
+
+    <div class="stats-bar">
+      <div class="stat total"><div class="n" id="statTotal">0</div><div class="l">cours</div></div>
+      <div class="stat overdue"><div class="n" id="statOverdue">0</div><div class="l">en retard</div></div>
+      <div class="stat due"><div class="n" id="statDue">0</div><div class="l">aujourd'hui</div></div>
+    </div>
+
+    <div class="add-panel">
+      <div class="add-panel-label">Ajouter un cours</div>
+      <div class="add-fields">
+        <input type="text" id="newName" placeholder="Nom du cours (ex: Hémostase)">
+        <input type="text" id="newUE" placeholder="UE (ex: UE 2.1)">
+        <input type="date" id="newDate">
+        <button class="add-btn" id="addCourseBtn">+ Ajouter le cours</button>
+      </div>
+    </div>
+
+    <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un cours ou une UE...">
+
+    <div class="filter-row" id="filterRow">
+      <div class="filter-chip active" data-f="all">Tous</div>
+      <div class="filter-chip" data-f="overdue">En retard</div>
+      <div class="filter-chip" data-f="due">Aujourd'hui</div>
+      <div class="filter-chip" data-f="ontrack">À jour</div>
+    </div>
+    <div class="view-toggle-row">
+      <div class="view-toggle" id="groupToggle">☰ Grouper par UE</div>
+    </div>
+
+    <div id="courseList"></div>
+  </div>
+
+  <div class="view" id="view-td">
+    <div class="day-label">TD</div>
+    <p class="hint">Travaux dirigés à préparer et à suivre, séparément des cours.</p>
+
+    <div class="stats-bar">
+      <div class="stat"><div class="n" id="tdStatTotal">0</div><div class="l">TD</div></div>
+      <div class="stat due"><div class="n" id="tdStatTodo">0</div><div class="l">à préparer</div></div>
+      <div class="stat total"><div class="n" id="tdStatDone">0</div><div class="l">faits</div></div>
+    </div>
+
+    <div class="add-panel">
+      <div class="add-panel-label">Ajouter un TD</div>
+      <div class="add-fields">
+        <input type="text" id="tdName" placeholder="Nom du TD (ex: Pose de sonde urinaire)">
+        <input type="text" id="tdUE" placeholder="UE (ex: UE 4.1)">
+        <select id="tdCategory">
+          <option value="suivi_pedagogique">Suivi pédagogique</option>
+          <option value="td_simple">TD simple</option>
+        </select>
+        <input type="date" id="tdDate">
+        <button class="add-btn" id="addTDBtn">+ Ajouter le TD</button>
+      </div>
+    </div>
+
+    <div class="filter-row" id="tdFilterRow">
+      <div class="filter-chip active" data-tdf="all">Tous</div>
+      <div class="filter-chip" data-tdf="suivi_pedagogique">Suivi pédagogique</div>
+      <div class="filter-chip" data-tdf="td_simple">TD simples</div>
+    </div>
+    <div class="view-toggle-row">
+      <div class="view-toggle" id="tdGroupToggle">☰ Grouper par UE</div>
+    </div>
+
+    <div id="tdList"></div>
+  </div>
+
+  <div class="view" id="view-stages">
+    <div class="day-label">Stages</div>
+    <p class="hint">Un module séparé du tracker scolaire : établissement, objectifs, journal quotidien, questions à rechercher, bilan.</p>
+
+    <div class="add-panel">
+      <div class="add-panel-label">Ajouter un stage</div>
+      <div class="add-fields">
+        <input type="text" id="stageEtab" placeholder="Établissement (ex: Hôpital Bichat)">
+        <input type="text" id="stageService" placeholder="Service (ex: Cardiologie)">
+        <div class="plan-row2">
+          <input type="date" id="stageDateDebut">
+          <input type="date" id="stageDateFin">
+        </div>
+        <input type="text" id="stageHoraires" placeholder="Horaires (ex: 7h-15h, roulement)">
+        <button class="add-btn" id="addStageBtn">+ Ajouter le stage</button>
+      </div>
+    </div>
+
+    <div id="stagesList"></div>
+  </div>
+
+  <div class="view" id="view-qcm">
+    <div class="day-label">Analytics QCM</div>
+    <p class="hint">Entre tes scores, le site calcule le taux par UE, les chapitres faibles et les erreurs qui reviennent.</p>
+
+    <div class="stats-bar">
+      <div class="stat teal"><div class="n" id="qcmGlobalPct">—</div><div class="l">réussite globale</div></div>
+      <div class="stat total"><div class="n" id="qcmTotalCount">0</div><div class="l">QCM faits</div></div>
+      <div class="stat"><div class="n" id="qcmEntryCount">0</div><div class="l">entrées</div></div>
+    </div>
+
+    <div class="add-panel">
+      <div class="add-panel-label">Ajouter un résultat</div>
+      <div class="add-fields">
+        <input type="text" id="qcmChapter" list="qcmCourseNames" placeholder="Chapitre (ex: Hémostase)">
+        <datalist id="qcmCourseNames"></datalist>
+        <input type="text" id="qcmUE" placeholder="UE (ex: UE 2.1)">
+        <input type="number" id="qcmTotal" min="1" placeholder="QCM total (ex: 50)">
+        <input type="number" id="qcmCorrect" min="0" placeholder="Bonnes réponses (ex: 41)">
+        <input type="text" id="qcmTags" placeholder="Erreurs récurrentes (ex: nerf radial, vascularisation)">
+        <input type="date" id="qcmDate">
+        <button class="add-btn" id="addQCMBtn">+ Enregistrer le résultat</button>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">Réussite par UE</div>
+      <div id="qcmUEBreakdown"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">Chapitres à revoir en priorité</div>
+      <div id="qcmChapterList"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">Erreurs récurrentes</div>
+      <div class="tag-cloud" id="qcmTagCloud"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">Journal</div>
+      <div id="qcmJournal"></div>
+    </div>
+  </div>
+
+  <div class="view" id="view-planning">
+    <div class="day-label">Générateur de planning</div>
+    <p class="hint">Le planning met en priorité les révisions en retard, puis dues aujourd'hui, puis tes nouveaux cours et QCM.</p>
+
+    <div class="dash-card">
+      <div class="plan-form">
+        <div class="plan-field">
+          <label>Heure de début</label>
+          <input type="time" id="planStart" value="08:00">
+        </div>
+        <div class="plan-row2">
+          <div class="plan-field">
+            <label>Temps disponible (h)</label>
+            <input type="number" id="planHours" min="0.5" step="0.5" value="6">
+          </div>
+          <div class="plan-field">
+            <label>Nouveaux cours à voir</label>
+            <input type="number" id="planNewCourses" min="0" step="1" value="0">
+          </div>
+        </div>
+        <div class="plan-field">
+          <label>QCM à faire</label>
+          <input type="number" id="planQCM" min="0" step="10" value="0">
+        </div>
+        <button class="plan-gen-btn" id="planGenBtn">🎯 Générer le planning</button>
+        <p class="plan-note">Estimations : J+0 = 45 min, J+3 = 20 min, J+7 = 10 min, J+30 = 5 min, nouveau cours = 60 min, QCM = ~30 sec/QCM.</p>
+      </div>
+    </div>
+
+    <div id="planOutput"></div>
+  </div>
+
+  <div class="view" id="view-bilan">
+    <div class="day-label">Bilan de la semaine</div>
+    <div id="bilan-content"></div>
+  </div>
+
+  <div class="view" id="view-methodes">
+    <div class="day-label">Les 5 Méthodes d'Élite</div>
+
+    <div class="m-card rule">
+      <h3>Le cœur du système : les Fiches de Flux</h3>
+      <p><b>Règle 1 — Zéro phrase.</b> Interdiction d'écrire des structures (Sujet + Verbe + Complément). Utilisez exclusivement des mots-clés, des abréviations et des symboles de flux (↑, ↓, →, ⇒, ∅).</p>
+      <p><b>Règle 2 — La logique de cause à effet.</b> Remplacez les paragraphes par des chaînes logiques.</p>
+      <div class="flow-line">Ex : Insuffis. Cardiaque G → ↓ Débit Sang → ↓ Perfusion Rénale → Activation SRAA.</div>
+      <p><b>Règle 3 — Le format Recto-Verso Flash.</b> Créez des fiches bristol minimalistes. Au Recto, un mot-clé ou un schéma vierge (ex : Étapes de l'hémostase ?). Au Verso, la chaîne de flux logique associée. Vous créez un outil de test instantané.</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-sub">M1</div>
+      <h3>Le Tableau Blanc Professionnel — Théorie UPC</h3>
+      <p><b>Principe :</b> Remplacer les fiches papier interminables par une réécriture flash.</p>
+      <p><b>Action :</b> Fermez vos cours, faites face à un grand tableau blanc et réécrivez vos chaînes de flux de mémoire (schémas, flèches, concepts). Corrigez vos erreurs en vert.</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-sub">M2</div>
+      <h3>La Grille d'Évaluation Inversée — Pratique IFSI</h3>
+      <p><b>Principe :</b> Hacker les épreuves pratiques de soins de confort (UE 4.1).</p>
+      <p><b>Action :</b> Transformez les grilles de notation des formateurs de Bichat en check-lists algorithmiques de flux étape par étape (ex : Friction hydro-alcoolique → Posture ergonomique → Pose du matériel...). Répétez le geste de manière robotique.</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-sub">M3</div>
+      <h3>Le Carnet de Liaison Clinique — Stages</h3>
+      <p><b>Principe :</b> Développer un raisonnement d'ex-PASS digne d'un interne en médecine.</p>
+      <p><b>Action :</b> Gardez un carnet de poche dans votre blouse. Notez-y chaque pathologie/médicament croisé à l'hôpital. Le soir, rédigez une chaîne de flux de 3 lignes : Mécanisme → Symptômes → Surveillance clinique.</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-sub">M4</div>
+      <h3>Le Reverse Engineering des QCM — Examens Fac</h3>
+      <p><b>Principe :</b> Anticiper la logique des professeurs de l'Université Paris Cité.</p>
+      <p><b>Action :</b> Au bas de chaque fiche de flux, écrivez en rouge 3 pièges plausibles qu'un enseignant pourrait glisser dans un QCM (inversion de termes dans la chaîne logique, faux synonymes).</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-sub">M5</div>
+      <h3>La Spaced Repetition par Réécriture Minimaliste</h3>
+      <p><b>Principe :</b> Réactiver la mémoire par l'écriture à intervalles fixes pour briser la courbe de l'oubli.</p>
+      <p><b>Action :</b> Réécrivez le cours à J+0 (fiche de flux complète), J+3 (flux de mémoire sur brouillon), J+7 (uniquement les titres et les flèches principales) et J+30 (uniquement le concept central). Vous écrivez de moins en moins pour retenir de plus en plus.</p>
+    </div>
+  </div>
+
+  <div class="view" id="view-conseils">
+    <div class="day-label">Conseils Stratégiques pour Majorer</div>
+
+    <div class="c-card">
+      <h3>🔬 La recherche comme arme intellectuelle</h3>
+      <p>Le contenu quotidien n'a pas besoin d'être directement lié à l'IFSI.</p>
+      <p>L'objectif est de développer :</p>
+      <ul>
+        <li>votre culture générale scientifique et intellectuelle ;</li>
+        <li>votre esprit critique ;</li>
+        <li>votre capacité à analyser une idée ;</li>
+        <li>votre capacité à distinguer données, interprétation et hypothèses ;</li>
+        <li>votre capacité à formuler des questions pertinentes.</li>
+      </ul>
+      <p>La grille Question → Méthode → Résultat → Implications → Idées à retenir → Évolutions possibles transforme une consommation passive de contenu en véritable entraînement intellectuel.</p>
+    </div>
+
+    <div class="c-card">
+      <h3>🎓 Coursera comme investissement secondaire</h3>
+      <p>Deux séances en semaine + dimanche permettent de progresser régulièrement sans transformer les certifications en deuxième cursus universitaire.</p>
+      <p>L'objectif n'est pas d'accumuler dix certificats.</p>
+      <p><b>Une certification terminée et réellement maîtrisée &gt; cinq certifications commencées.</b></p>
+    </div>
+
+    <div class="c-card">
+      <h3>🏋️ Le Sport comme catalyseur</h3>
+      <p>Les 3 séances de salle et 2 de Pilates ne réduisent pas nécessairement votre temps d'étude : elles peuvent contribuer à votre énergie, votre concentration et votre équilibre général.</p>
+      <p>Traitez-les comme des rendez-vous importants, tout en surveillant votre récupération.</p>
+    </div>
+
+    <div class="c-card">
+      <h3>📚 Anticipation de Janvier</h3>
+      <p>Les partiels de l'Université Paris Cité ne pardonnent pas le retard.</p>
+      <p>L'avantage de l'ex-PASS doit se matérialiser par des notes supérieures à 17/20 sur les UE scientifiques (UE 2.1, 2.2) dès le premier semestre pour bétonner votre dossier de réorientation ou de poursuite d'études.</p>
+    </div>
+
+    <div class="c-card">
+      <h3>🧠 La règle ultime</h3>
+      <p>Votre objectif n'est pas de faire le maximum de choses chaque jour.</p>
+      <p>Votre objectif est de construire un système suffisamment solide pour pouvoir le maintenir pendant toute l'année :</p>
+      <div class="flow-line">IFSI → excellence académique<br>UPC → avance<br>Sport → énergie<br>Research → curiosité et esprit critique<br>Coursera → développement professionnel<br>Projets → construction personnelle<br>Repos → récupération</div>
+      <p>Objectif : ne pas simplement être productive pendant trois semaines.</p>
+      <p><b>Objectif : devenir la personne capable de maintenir ce niveau pendant toute l'année.</b></p>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-time" id="modalTime"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-detail" id="modalDetail"></div>
+    <button class="modal-close" id="modalClose">Fermer</button>
+  </div>
+</div>
+
+<script>
+// Persistence: Chrome localStorage keeps tracker data after refresh/reopen.
+const DAYS_DEFAULT = [
+  { key:'lundi', label:'Lundi', short:'Lun', blocks:[
+    {t:'07h15–07h45', title:'Routine Recherche & Langues', detail:"20 min : Lecture/visionnage actif d'un contenu au choix : Article scientifique, Article Substack, Vidéo-essai, Article de vulgarisation sérieux, Essai / chapitre.\n\n10 min : Prise de notes et réflexion : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\nImportant : le contenu n'a pas besoin d'être lié à l'IFSI ou à la santé.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'08h30–17h30', title:'Cours à l\u2019IFSI Bichat / Stages'},
+    {t:'17h45–19h15', title:'Bloc d\u2019Ancrage IFSI', detail:"À la BU ou chez soi :\n\n60 min : Méthode 5 & Système de Flux (Fiches Recto-Verso J+0 du jour).\n\n15 min : Méthode 4 (création de 3 pièges QCM en rouge).\n\n15 min : Méthode 2 (flux d'action du TP ou révision des gestes)."},
+    {t:'19h30–20h45', title:'Sport de Haute Performance — Salle', detail:"Exutoire physique pour éliminer le cortisol accumulé durant les cours."},
+    {t:'21h00–21h45', title:'Nutrition Healthy & Cuisine Express', detail:"Préparation d'un repas sain et riche en nutriments pour le soir et le lendemain midi."},
+    {t:'21h55–22h30', title:'Le Bloc Évolution — Créneau Flexible', detail:"Option A — Projets : Code de la route, CV updates & Applications, Création de contenu.\n\nOption B — Détente productive : Piano, Crochet, Lecture."},
+  ]},
+  { key:'mardi', label:'Mardi', short:'Mar', blocks:[
+    {t:'07h15–07h45', title:'Routine Recherche & Langues', detail:"20 min : Lecture/visionnage actif d'un contenu au choix : Article scientifique, Article Substack, Vidéo-essai, Article de vulgarisation sérieux, Essai / chapitre.\n\n10 min : Prise de notes et réflexion : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\nImportant : le contenu n'a pas besoin d'être lié à l'IFSI ou à la santé.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'08h30–17h30', title:'Cours à l\u2019IFSI Bichat / Stages'},
+    {t:'17h45–19h15', title:'Bloc d\u2019Ancrage IFSI', detail:"À la BU ou chez soi :\n\n60 min : Méthode 5 & Système de Flux (Fiches Recto-Verso J+0 du jour).\n\n15 min : Méthode 4 (création de 3 pièges QCM en rouge).\n\n15 min : Méthode 2 (flux d'action du TP ou révision des gestes)."},
+    {t:'19h30–20h45', title:'Sport de Haute Performance — Pilates', detail:"Exutoire physique pour éliminer le cortisol accumulé durant les cours."},
+    {t:'21h00–21h45', title:'Nutrition Healthy & Cuisine Express', detail:"Préparation d'un repas sain et riche en nutriments pour le soir et le lendemain midi."},
+    {t:'21h55–22h30', title:'Le Bloc Évolution — Créneau Flexible', detail:"Option A — Projets : Code de la route, CV updates & Applications, Création de contenu.\n\nOption B — Détente productive : Piano, Crochet, Lecture."},
+  ]},
+  { key:'mercredi', label:'Mercredi', short:'Mer', blocks:[
+    {t:'07h15–07h45', title:'Routine Recherche & Langues', detail:"20 min : Lecture/visionnage actif d'un contenu au choix : Article scientifique, Article Substack, Vidéo-essai, Article de vulgarisation sérieux, Essai / chapitre.\n\n10 min : Prise de notes et réflexion : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\nImportant : le contenu n'a pas besoin d'être lié à l'IFSI ou à la santé.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'08h30–17h30', title:'Cours à l\u2019IFSI Bichat / Stages'},
+    {t:'17h45–19h15', title:'Bloc d\u2019Ancrage IFSI', detail:"À la BU ou chez soi :\n\n60 min : Méthode 5 & Système de Flux (Fiches Recto-Verso J+0 du jour).\n\n15 min : Méthode 4 (création de 3 pièges QCM en rouge).\n\n15 min : Méthode 2 (flux d'action du TP ou révision des gestes)."},
+    {t:'19h30–20h45', title:'Sport de Haute Performance — Salle', detail:"Exutoire physique pour éliminer le cortisol accumulé durant les cours."},
+    {t:'21h00–21h45', title:'Nutrition Healthy & Cuisine Express', detail:"Préparation d'un repas sain et riche en nutriments pour le soir et le lendemain midi."},
+    {t:'21h55–22h30', title:'Le Bloc Évolution — Créneau Flexible', detail:"Option A — Projets : Code de la route, CV updates & Applications, Création de contenu.\n\nOption B — Détente productive : Piano, Crochet, Lecture."},
+  ]},
+  { key:'jeudi', label:'Jeudi', short:'Jeu', blocks:[
+    {t:'08h15–08h45', title:'Routine Recherche & Langues', detail:"20 min : Contenu au choix : article scientifique, Substack, vidéo-essai, etc.\n\n10 min : Notes et réflexion selon la grille : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'09h00–11h00', title:'Prise de Notes Active — Moodle UPC', detail:"Visionner les capsules Moodle de l'UPC (Bio fondamentale, Anatomie).\n\nRédiger directement sous forme de Fiches de Flux."},
+    {t:'11h10–12h10', title:'Méthode 1 — Le Tableau Blanc J+3', detail:"Réécrire de mémoire les flux des cours du lundi et du mardi."},
+    {t:'12h10–13h40', title:'Pause Déjeuner Healthy'},
+    {t:'13h40–14h40', title:'Méthode 2 — Entraînement Gestuel', detail:"Répéter les check-lists algorithmiques de soins (gestes à blanc)."},
+    {t:'14h50–15h50', title:'Méthode 4 — Auto-test QCM', detail:"Se tester sur les pièges à QCM inventés la semaine précédente."},
+    {t:'16h05–17h35', title:'Certification Coursera', detail:"Avancer sur votre certification.\n\nProgression des modules, exercices et évaluations."},
+    {t:'18h20–19h35', title:'Salle de Sport — Session 3/3'},
+    {t:'20h20–22h20', title:'Meal Prep Majeur — Cuisine Healthy', detail:"Session de cuisine en lot pour préparer tous les repas du week-end et du début de semaine suivante.\n\nGain de temps absolu."},
+  ]},
+  { key:'vendredi', label:'Vendredi', short:'Ven', blocks:[
+    {t:'07h15–07h45', title:'Routine Recherche & Langues', detail:"20 min : Contenu intellectuel au choix.\n\n10 min : Notes et réflexion : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'08h30–12h00', title:'Cours du Matin'},
+    {t:'14h00–16h00', title:'Prise de Notes Active', detail:"Fin des capsules UPC en distanciel."},
+    {t:'16h10–17h10', title:'Méthode 1 — Le Tableau Blanc J+3', detail:"Réécrire de mémoire les flux des cours du mercredi et du jeudi."},
+    {t:'17h30–18h30', title:'Pilates — Session 2/2'},
+    {t:'19h00–20h30', title:'Certification Coursera', detail:"Progression de la certification.\n\nFinalisation des quiz et évaluations de la semaine."},
+    {t:'21h00–22h30', title:'Le Bloc Évolution', detail:"Code, CV, Crochet, Piano, Content Creation."},
+  ]},
+  { key:'samedi', label:'Samedi', short:'Sam', blocks:[
+    {t:'08h30–09h00', title:'Routine Recherche & Langues', detail:"20 min : Contenu intellectuel au choix.\n\n10 min : Notes et réflexion : Question, Méthode / approche, Résultat / thèse, Implications, Idées à retenir, Évolutions possibles.\n\n10 min d'application de langues ou lecture du Coran."},
+    {t:'09h00–10h30', title:'Méthode 5 — Spaced Repetition J+7 et J+30', detail:"Réécrire au brouillon la structure minimale des cours d'il y a une semaine et un mois."},
+    {t:'10h40–11h10', title:'Méthode 3 — Carnet de Liaison', detail:"En période de stage : mettre au propre les flux cliniques vus à l'hôpital durant la semaine."},
+    {t:'11h20–12h50', title:'Le Bloc Évolution', detail:"Gros focus CV, Applications, Création de contenu."},
+    {t:'après-midi', title:'Temps libre', detail:"Temps libre, vie sociale ou repos."},
+  ]},
+  { key:'dimanche', label:'Dimanche', short:'Dim', blocks:[
+    {t:'bloc Coursera', title:'Repos + Coursera', detail:"Séance de consolidation/rattrapage Coursera.\n\nFinalisation d'un module ou d'un quiz si nécessaire.\n\nOrganisation de la progression pour la semaine suivante."},
+    {t:'reste du jour', title:'Repos', detail:"Le reste de la journée : repos, vie sociale, loisirs et récupération."},
+  ]},
+];
+
+let currentView = 'dashboard';
+let currentDay = 'lundi';
+let cache = {};
+let scheduleEditMode = false;
+let scheduleEditingId = null;
+
+const DAY_META = DAYS_DEFAULT.map(d=>({ key:d.key, label:d.label, short:d.short }));
+
+function seedId(dayKey, idx){ return dayKey+'-seed-'+idx; }
+
+function loadScheduleData(){
+  try{
+    const raw = localStorage.getItem('schedule:custom');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  const seeded = {};
+  DAYS_DEFAULT.forEach(day=>{
+    seeded[day.key] = day.blocks.map((b,idx)=> ({ ...b, id: seedId(day.key, idx) }));
+  });
+  try{ localStorage.setItem('schedule:custom', JSON.stringify(seeded)); }catch(e){}
+  return seeded;
+}
+let scheduleData = loadScheduleData();
+
+function saveScheduleData(){
+  try{ localStorage.setItem('schedule:custom', JSON.stringify(scheduleData)); }catch(e){ console.error(e); }
+}
+
+function getDayBlocks(dayKey){
+  if(!scheduleData[dayKey]) scheduleData[dayKey] = [];
+  return scheduleData[dayKey];
+}
+
+function resetDayToDefault(dayKey){
+  const def = DAYS_DEFAULT.find(d=>d.key===dayKey);
+  scheduleData[dayKey] = def ? def.blocks.map((b,idx)=>({ ...b, id: seedId(dayKey, idx) })) : [];
+  saveScheduleData();
+}
+
+function keyFor(day){ return 'tracker:' + day; }
+
+async function loadDay(day){
+  if(cache[day]) return cache[day];
+  try{
+    const raw = localStorage.getItem(keyFor(day));
+    cache[day] = raw ? JSON.parse(raw) : { checked:{}, energy:null, sommeil:'', derape:'', marche:'' };
+  }catch(e){
+    cache[day] = { checked:{}, energy:null, sommeil:'', derape:'', marche:'' };
+  }
+  return cache[day];
+}
+
+async function saveDay(day){
+  try{
+    localStorage.setItem(keyFor(day), JSON.stringify(cache[day]));
+    const tag = document.getElementById('savedTag');
+    tag.classList.add('show');
+    setTimeout(()=>tag.classList.remove('show'), 1200);
+  }catch(e){ console.error('save failed', e); }
+}
+
+async function loadHeader(){
+  try{
+    const raw = localStorage.getItem('header');
+    if(raw){
+      const h = JSON.parse(raw);
+      document.getElementById('weekStart').value = h.weekStart || '';
+      document.getElementById('testGoal').value = h.testGoal || '';
+    }
+  }catch(e){}
+}
+async function saveHeader(){
+  const h = { weekStart: document.getElementById('weekStart').value, testGoal: document.getElementById('testGoal').value };
+  try{ localStorage.setItem('header', JSON.stringify(h)); }catch(e){}
+}
+document.getElementById('weekStart').addEventListener('change', saveHeader);
+document.getElementById('testGoal').addEventListener('input', saveHeader);
+
+function openModal(time, title, detail){
+  document.getElementById('modalTime').textContent = time || '';
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalDetail').textContent = detail || "Pas de détail supplémentaire pour ce bloc.";
+  document.getElementById('overlay').classList.add('show');
+}
+document.getElementById('modalClose').onclick = ()=> document.getElementById('overlay').classList.remove('show');
+document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') e.currentTarget.classList.remove('show'); };
+
+function buildDayNav(){
+  const nav = document.getElementById('daynav');
+  nav.innerHTML = '';
+  DAY_META.forEach(d=>{
+    const btn = document.createElement('div');
+    btn.className = 'daybtn' + (d.key===currentDay ? ' active':'');
+    btn.textContent = d.short;
+    btn.onclick = ()=>{ currentDay = d.key; render(); };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('scheduleEditToggle').onclick = ()=>{
+  scheduleEditMode = !scheduleEditMode;
+  scheduleEditingId = null;
+  document.getElementById('scheduleEditToggle').classList.toggle('active', scheduleEditMode);
+  document.getElementById('scheduleEditToggle').textContent = scheduleEditMode ? '✓ Terminer' : '✎ Modifier';
+  document.getElementById('sched-hint').textContent = scheduleEditMode
+    ? "Réordonne (▲▼), modifie (✎) ou supprime (✕) un bloc. Les horaires sont juste des libellés — au format que tu veux."
+    : "Touchez un bloc pour voir le détail complet.";
+  renderSchedule();
+};
+
+function renderSchedule(){
+  const meta = DAY_META.find(d=>d.key===currentDay);
+  document.getElementById('sched-day-label').textContent = meta.label;
+  const box = document.getElementById('sched-blocks');
+  box.innerHTML = '';
+  const blocks = getDayBlocks(currentDay);
+
+  blocks.forEach((b, idx)=>{
+    const el = document.createElement('div');
+    if(scheduleEditingId === b.id){
+      el.className = 'block edit-mode-form';
+      el.innerHTML = `
+        <div class="edit-fields" style="width:100%;">
+          <input type="text" class="editBlockTime" value="${(b.t||'').replace(/"/g,'&quot;')}" placeholder="Horaire (ex: 17h45–19h15)">
+          <input type="text" class="editBlockTitle" value="${(b.title||'').replace(/"/g,'&quot;')}" placeholder="Titre du bloc">
+          <textarea class="editBlockDetail" placeholder="Détail (optionnel)">${b.detail||''}</textarea>
+          <div class="edit-actions">
+            <button class="edit-save" data-blocksave="${b.id}">Enregistrer</button>
+            <button class="edit-cancel" data-blockcancel="${b.id}">Annuler</button>
+          </div>
+        </div>`;
+      box.appendChild(el);
+      return;
+    }
+    el.className = 'block' + (b.detail ? ' has-detail' : '');
+    const editControls = scheduleEditMode ? `
+      <div class="block-edit-controls">
+        <span class="icon-btn" data-blockup="${b.id}">▲</span>
+        <span class="icon-btn" data-blockdown="${b.id}">▼</span>
+        <span class="icon-btn" data-blockedit="${b.id}">✎</span>
+        <span class="icon-btn" data-blockdel="${b.id}">✕</span>
+      </div>` : `<div class="info-dot">${b.detail?'ⓘ':''}</div>`;
+    el.innerHTML = `<div class="time">${b.t}</div><div style="flex:1;"><div class="title">${b.title}</div></div>${editControls}`;
+    if(!scheduleEditMode){
+      el.onclick = ()=> openModal(b.t, b.title, b.detail);
+    }
+    box.appendChild(el);
+  });
+
+  if(scheduleEditMode){
+    const addRow = document.createElement('div');
+    addRow.style.display = 'flex';
+    addRow.style.gap = '8px';
+    addRow.style.marginTop = '10px';
+    addRow.innerHTML = `
+      <button class="add-btn" style="flex:1;" id="addBlockBtn">+ Ajouter un bloc</button>
+      <button class="add-btn" style="flex:1;background:var(--brick);" id="resetDayBtn">↺ Réinitialiser ce jour</button>`;
+    box.appendChild(addRow);
+
+    document.getElementById('addBlockBtn').onclick = ()=>{
+      const newId = currentDay+'-'+Date.now();
+      getDayBlocks(currentDay).push({ id:newId, t:'', title:'', detail:'' });
+      saveScheduleData();
+      scheduleEditingId = newId;
+      renderSchedule();
+    };
+    document.getElementById('resetDayBtn').onclick = ()=>{
+      const ok = confirm("Réinitialiser " + meta.label + " restaure les blocs d'origine et efface tes modifications sur ce jour. Continuer ?");
+      if(!ok) return;
+      resetDayToDefault(currentDay);
+      renderSchedule();
+    };
+  }
+
+  box.querySelectorAll('[data-blockup]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const arr = getDayBlocks(currentDay);
+      const i = arr.findIndex(x=>x.id===el.dataset.blockup);
+      if(i>0){ [arr[i-1],arr[i]] = [arr[i],arr[i-1]]; saveScheduleData(); renderSchedule(); }
+    };
+  });
+  box.querySelectorAll('[data-blockdown]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const arr = getDayBlocks(currentDay);
+      const i = arr.findIndex(x=>x.id===el.dataset.blockdown);
+      if(i<arr.length-1){ [arr[i+1],arr[i]] = [arr[i],arr[i+1]]; saveScheduleData(); renderSchedule(); }
+    };
+  });
+  box.querySelectorAll('[data-blockedit]').forEach(el=>{
+    el.onclick = (e)=>{ e.stopPropagation(); scheduleEditingId = el.dataset.blockedit; renderSchedule(); };
+  });
+  box.querySelectorAll('[data-blockdel]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      scheduleData[currentDay] = getDayBlocks(currentDay).filter(x=>x.id!==el.dataset.blockdel);
+      saveScheduleData();
+      renderSchedule();
+    };
+  });
+  box.querySelectorAll('[data-blocksave]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const form = el.closest('.edit-mode-form');
+      const arr = getDayBlocks(currentDay);
+      const block = arr.find(x=>x.id===el.dataset.blocksave);
+      block.t = form.querySelector('.editBlockTime').value.trim();
+      block.title = form.querySelector('.editBlockTitle').value.trim();
+      block.detail = form.querySelector('.editBlockDetail').value.trim();
+      scheduleEditingId = null;
+      saveScheduleData();
+      renderSchedule();
+    };
+  });
+  box.querySelectorAll('[data-blockcancel]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const arr = getDayBlocks(currentDay);
+      const block = arr.find(x=>x.id===el.dataset.blockcancel);
+      if(block && !block.title && !block.t) scheduleData[currentDay] = arr.filter(x=>x.id!==block.id);
+      scheduleEditingId = null;
+      renderSchedule();
+    };
+  });
+}
+
+async function renderTracker(){
+  const meta = DAY_META.find(d=>d.key===currentDay);
+  document.getElementById('track-day-label').textContent = meta.label;
+  const data = await loadDay(currentDay);
+  const box = document.getElementById('track-blocks');
+  box.innerHTML = '';
+  const blocks = getDayBlocks(currentDay);
+  blocks.forEach(b=>{
+    const checked = !!data.checked[b.id];
+    const el = document.createElement('div');
+    el.className = 'track-block' + (checked ? ' checked':'');
+    el.innerHTML = `<div class="checkbox">${checked?'✓':''}</div><div class="track-info"><div class="time">${b.t}</div><div class="title">${b.title}</div></div><div class="info-dot">${b.detail?'ⓘ':''}</div>`;
+    el.querySelector('.checkbox').onclick = (e)=>{
+      e.stopPropagation();
+      data.checked[b.id] = !data.checked[b.id];
+      renderTracker();
+      saveDay(currentDay);
+    };
+    el.querySelector('.track-info').onclick = ()=> openModal(b.t, b.title, b.detail);
+    box.appendChild(el);
+  });
+
+  document.querySelectorAll('#energyScale .scale-btn').forEach(btn=>{
+    btn.classList.toggle('active', Number(btn.dataset.val)===data.energy);
+    btn.onclick = ()=>{ data.energy = Number(btn.dataset.val); renderTracker(); saveDay(currentDay); };
+  });
+  document.getElementById('sommeilInput').value = data.sommeil || '';
+  document.getElementById('derapeInput').value = data.derape || '';
+  document.getElementById('marcheInput').value = data.marche || '';
+}
+
+document.getElementById('sommeilInput').addEventListener('input', async e=>{
+  const data = await loadDay(currentDay);
+  data.sommeil = e.target.value;
+  saveDay(currentDay);
+});
+document.getElementById('derapeInput').addEventListener('input', async e=>{
+  const data = await loadDay(currentDay);
+  data.derape = e.target.value;
+  saveDay(currentDay);
+});
+document.getElementById('marcheInput').addEventListener('input', async e=>{
+  const data = await loadDay(currentDay);
+  data.marche = e.target.value;
+  saveDay(currentDay);
+});
+
+async function renderBilan(){
+  const box = document.getElementById('bilan-content');
+  box.innerHTML = '<div style="font-size:11.5px;color:var(--ink-soft);font-style:italic;">Chargement…</div>';
+  let html = '';
+  for(const day of DAY_META){
+    const data = await loadDay(day.key);
+    const total = getDayBlocks(day.key).length;
+    const done = Object.values(data.checked).filter(Boolean).length;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    html += `<div class="bilan-row">
+      <div class="bilan-top"><div class="bilan-day">${day.label}</div><div class="bilan-pct">${pct}%</div></div>
+      <div class="barbg"><div class="barfill" style="width:${pct}%"></div></div>
+      <div class="bilan-meta">
+        <span>énergie: ${data.energy || '—'}/5</span>
+        <span>sommeil: ${data.sommeil || '—'}h</span>
+      </div>
+      ${data.derape ? `<div class="bilan-note">⚠ ${data.derape}</div>` : ''}
+    </div>`;
+  }
+  box.innerHTML = html;
+}
+
+function render(){
+  buildDayNav();
+  ['dashboard','schedule','tracker','suivi','td','stages','qcm','planning','bilan','methodes','conseils'].forEach(v=>{
+    document.getElementById('view-'+v).classList.toggle('active', currentView===v);
+  });
+  document.getElementById('daynav').style.display = (currentView==='schedule' || currentView==='tracker') ? 'flex' : 'none';
+  if(currentView==='dashboard') renderDashboard();
+  else if(currentView==='schedule') renderSchedule();
+  else if(currentView==='tracker') renderTracker();
+  else if(currentView==='suivi') renderSuivi();
+  else if(currentView==='td') renderTD();
+  else if(currentView==='stages') renderStages();
+  else if(currentView==='qcm') renderQCM();
+  else if(currentView==='bilan') renderBilan();
+}
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentView = tab.dataset.view;
+    render();
+  };
+});
+
+/* =========================================================
+   SUIVI DES COURS (J+0 / J+3 / J+7 / J+30 — Méthode 5)
+   ========================================================= */
+const METHODS = ['Fiche de Flux', 'Tableau Blanc J+3', 'Auto-test QCM', 'Carnet de Liaison', 'Grille Inversée (gestes)', 'Spaced Repetition', 'Autre'];
+const CP_DEFS = [
+  { key:'j0', label:'J+0', offset:0, minutes:45 },
+  { key:'j3', label:'J+3', offset:3, minutes:20 },
+  { key:'j7', label:'J+7', offset:7, minutes:10 },
+  { key:'j30', label:'J+30', offset:30, minutes:5 },
+];
+
+let courses = [];
+let suiviFilter = 'all';
+let suiviSearch = '';
+let expanded = {};
+let editingCourse = {};
+let groupByUE = false;
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function addDaysStr(dateStr, n){
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+function fmtShort(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  return d.getDate()+'/'+(d.getMonth()+1);
+}
+
+function loadCourses(){
+  try{
+    const raw = localStorage.getItem('courses');
+    courses = raw ? JSON.parse(raw) : [];
+    courses.forEach(c=>{ if(c.notes===undefined) c.notes=''; if(!c.ue) c.ue=''; });
+  }catch(e){ courses = []; }
+}
+function saveCourses(){
+  try{ localStorage.setItem('courses', JSON.stringify(courses)); }catch(e){ console.error(e); }
+}
+
+function courseUrgency(course){
+  const today = todayStr();
+  const allDone = CP_DEFS.every(cp=>course.checkpoints[cp.key]);
+  if(allDone) return { status:'complete', sortDate:'0000-00-00' };
+  let status = 'ontrack';
+  let sortDate = '9999-99-99';
+  for(const cp of CP_DEFS){
+    const target = addDaysStr(course.dateAdded, cp.offset);
+    if(!course.checkpoints[cp.key]){
+      if(target < today){ return { status:'overdue', sortDate: target }; }
+      if(target === today && status!=='overdue'){ status='due'; sortDate = target; }
+      else if(status==='ontrack' && target < sortDate){ sortDate = target; }
+    }
+  }
+  return { status, sortDate };
+}
+
+function nextDueCheckpoint(course){
+  // returns the first not-done checkpoint whose target date <= today, or the next upcoming one
+  const today = todayStr();
+  for(const cp of CP_DEFS){
+    const target = addDaysStr(course.dateAdded, cp.offset);
+    if(!course.checkpoints[cp.key] && target <= today) return { cp, target, overdue: target < today };
+  }
+  for(const cp of CP_DEFS){
+    const target = addDaysStr(course.dateAdded, cp.offset);
+    if(!course.checkpoints[cp.key]) return { cp, target, overdue:false };
+  }
+  return null;
+}
+
+document.getElementById('newDate').value = todayStr();
+
+document.getElementById('addCourseBtn').onclick = ()=>{
+  const name = document.getElementById('newName').value.trim();
+  const ue = document.getElementById('newUE').value.trim();
+  const date = document.getElementById('newDate').value || todayStr();
+  if(!name) return;
+  const id = 'c'+Date.now();
+  courses.unshift({
+    id, name, ue, dateAdded: date,
+    checkpoints: { j0:false, j3:false, j7:false, j30:false },
+    revisions: [], notes: ''
+  });
+  expanded[id] = true;
+  document.getElementById('newName').value='';
+  document.getElementById('newUE').value='';
+  document.getElementById('newDate').value = todayStr();
+  saveCourses();
+  render();
+};
+
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.onclick = ()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    suiviFilter = chip.dataset.f;
+    renderSuivi();
+  };
+});
+document.getElementById('groupToggle').onclick = ()=>{
+  groupByUE = !groupByUE;
+  document.getElementById('groupToggle').classList.toggle('active', groupByUE);
+  renderSuivi();
+};
+document.getElementById('searchInput').addEventListener('input', e=>{
+  suiviSearch = e.target.value.toLowerCase();
+  renderSuivi();
+});
+
+function updateSuiviStats(){
+  let overdue=0, due=0;
+  courses.forEach(c=>{
+    const u = courseUrgency(c);
+    if(u.status==='overdue') overdue++;
+    else if(u.status==='due') due++;
+  });
+  document.getElementById('statTotal').textContent = courses.length;
+  document.getElementById('statOverdue').textContent = overdue;
+  document.getElementById('statDue').textContent = due;
+}
+
+function buildCourseCard(course, urgency){
+  const today = todayStr();
+  const card = document.createElement('div');
+  card.className = 'course-card ' + urgency.status + (expanded[course.id] ? ' expanded' : '');
+
+  if(editingCourse[course.id]){
+    card.classList.add('expanded');
+    card.innerHTML = `
+      <div class="course-header" style="cursor:default;">
+        <div class="edit-fields">
+          <input type="text" class="editName" value="${course.name.replace(/"/g,'&quot;')}" placeholder="Nom du cours">
+          <input type="text" class="editUE" value="${course.ue.replace(/"/g,'&quot;')}" placeholder="UE">
+          <input type="date" class="editDate" value="${course.dateAdded}">
+          <div class="edit-actions">
+            <button class="edit-save" data-course="${course.id}">Enregistrer</button>
+            <button class="edit-cancel" data-course="${course.id}">Annuler</button>
+          </div>
+        </div>
+      </div>`;
+    return card;
+  }
+
+  let cpHtml = '';
+  CP_DEFS.forEach(cp=>{
+    const target = addDaysStr(course.dateAdded, cp.offset);
+    const done = course.checkpoints[cp.key];
+    let cls = '';
+    if(done) cls = 'done';
+    else if(target < today) cls = 'overdue';
+    else if(target === today) cls = 'due';
+    cpHtml += `<div class="cp ${cls}" data-course="${course.id}" data-cp="${cp.key}">
+      <div class="cp-label">${cp.label}</div>
+      <div class="cp-date">${done?'✓':fmtShort(target)}</div>
+    </div>`;
+  });
+
+  let revHtml = '';
+  course.revisions.slice().reverse().forEach((r,idx)=>{
+    const realIdx = course.revisions.length - 1 - idx;
+    revHtml += `<div class="rev-item">
+      <span><span class="rev-method">${r.method}</span></span>
+      <span class="rev-meta">${fmtShort(r.date)} <span class="rev-del" data-course="${course.id}" data-revidx="${realIdx}">✕</span></span>
+    </div>`;
+  });
+
+  const methodOptions = METHODS.map(m=>`<option value="${m}">${m}</option>`).join('');
+  const statusLabel = urgency.status==='overdue' ? 'en retard' : urgency.status==='due' ? "à réviser aujourd'hui" : urgency.status==='complete' ? 'terminé' : 'à jour';
+  const qcmInfo = qcmStatusForChapter(course.name);
+  const qcmBadgeHtml = qcmInfo ? `<span class="qcm-badge ${qcmInfo.status}">QCM ${qcmInfo.pct}%</span>` : '';
+
+  card.innerHTML = `
+    <div class="course-header" data-toggle="${course.id}">
+      <div>
+        <div class="course-name">${course.name} ${urgency.status==='complete'?'<span class="badge-complete">✓ complet</span>':''}</div>
+        ${course.ue?`<div class="course-ue">${course.ue}</div>`:''}
+        <div class="course-meta-line"><span>vu le ${fmtShort(course.dateAdded)}</span><span>${course.revisions.length} révision${course.revisions.length!==1?'s':''}</span><span>${statusLabel}</span>${qcmBadgeHtml}</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:4px;">
+        <div class="icon-btn" data-editcourse="${course.id}">✎</div>
+        <div class="icon-btn" data-delcourse="${course.id}">✕</div>
+        <div class="chev">▾</div>
+      </div>
+    </div>
+    <div class="course-body">
+      <div class="checkpoints">${cpHtml}</div>
+      <div class="revision-count"><b>${course.revisions.length}</b> révision${course.revisions.length!==1?'s':''} enregistrée${course.revisions.length!==1?'s':''}</div>
+      <div class="rev-list">${revHtml}</div>
+      <div class="rev-add">
+        <input type="date" class="revDate" value="${todayStr()}">
+        <select class="revMethod">${methodOptions}</select>
+        <button class="revAddBtn" data-course="${course.id}">+</button>
+      </div>
+      <div class="notes-label">Notes</div>
+      <textarea class="notes-area" data-course="${course.id}" placeholder="Points à revoir, difficultés, questions pour la formatrice...">${course.notes||''}</textarea>
+    </div>`;
+  return card;
+}
+
+function attachCourseCardEvents(box){
+  box.querySelectorAll('[data-toggle]').forEach(h=>{
+    h.onclick = (e)=>{
+      if(e.target.closest('.icon-btn')) return;
+      expanded[h.dataset.toggle] = !expanded[h.dataset.toggle];
+      renderSuivi();
+    };
+  });
+  box.querySelectorAll('[data-editcourse]').forEach(el=>{
+    el.onclick = (e)=>{ e.stopPropagation(); editingCourse[el.dataset.editcourse] = true; renderSuivi(); };
+  });
+  box.querySelectorAll('.edit-save').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const card = btn.closest('.course-card');
+      const course = courses.find(c=>c.id===btn.dataset.course);
+      const name = card.querySelector('.editName').value.trim();
+      const ue = card.querySelector('.editUE').value.trim();
+      const date = card.querySelector('.editDate').value;
+      if(name) course.name = name;
+      course.ue = ue;
+      if(date) course.dateAdded = date;
+      delete editingCourse[course.id];
+      saveCourses();
+      renderSuivi();
+    };
+  });
+  box.querySelectorAll('.edit-cancel').forEach(btn=>{
+    btn.onclick = (e)=>{ e.stopPropagation(); delete editingCourse[btn.dataset.course]; renderSuivi(); };
+  });
+  box.querySelectorAll('.cp').forEach(cp=>{
+    cp.onclick = (e)=>{
+      e.stopPropagation();
+      const course = courses.find(c=>c.id===cp.dataset.course);
+      course.checkpoints[cp.dataset.cp] = !course.checkpoints[cp.dataset.cp];
+      saveCourses();
+      renderSuivi();
+    };
+  });
+  box.querySelectorAll('[data-delcourse]').forEach(el=>{
+    el.onclick = (e)=>{ e.stopPropagation(); courses = courses.filter(c=>c.id!==el.dataset.delcourse); saveCourses(); renderSuivi(); };
+  });
+  box.querySelectorAll('.rev-del').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const course = courses.find(c=>c.id===el.dataset.course);
+      course.revisions.splice(Number(el.dataset.revidx), 1);
+      saveCourses();
+      renderSuivi();
+    };
+  });
+  box.querySelectorAll('.revAddBtn').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const card = btn.closest('.course-card');
+      const date = card.querySelector('.revDate').value || todayStr();
+      const method = card.querySelector('.revMethod').value;
+      const course = courses.find(c=>c.id===btn.dataset.course);
+      course.revisions.push({ date, method, note:'' });
+      saveCourses();
+      renderSuivi();
+    };
+  });
+  box.querySelectorAll('.notes-area').forEach(area=>{
+    area.addEventListener('click', e=> e.stopPropagation());
+    area.addEventListener('input', e=>{ courses.find(c=>c.id===area.dataset.course).notes = e.target.value; });
+    area.addEventListener('blur', ()=> saveCourses());
+  });
+}
+
+function renderSuivi(){
+  updateSuiviStats();
+  const box = document.getElementById('courseList');
+  box.innerHTML = '';
+
+  let list = courses.map(c=>({ course:c, urgency: courseUrgency(c) }));
+  if(suiviFilter!=='all') list = list.filter(x=> x.urgency.status===suiviFilter);
+  if(suiviSearch) list = list.filter(x=> x.course.name.toLowerCase().includes(suiviSearch) || x.course.ue.toLowerCase().includes(suiviSearch));
+  list.sort((a,b)=>{
+    const order = { overdue:0, due:1, ontrack:2, complete:3 };
+    if(order[a.urgency.status]!==order[b.urgency.status]) return order[a.urgency.status]-order[b.urgency.status];
+    return a.urgency.sortDate.localeCompare(b.urgency.sortDate);
+  });
+
+  if(list.length===0){ box.innerHTML = '<div class="empty">Aucun cours ici pour le moment.</div>'; return; }
+
+  if(groupByUE){
+    const groups = {}, order = [];
+    list.forEach(item=>{
+      const ue = item.course.ue || 'Sans UE';
+      if(!groups[ue]){ groups[ue]=[]; order.push(ue); }
+      groups[ue].push(item);
+    });
+    order.forEach(ue=>{
+      const header = document.createElement('div');
+      header.className = 'group-header';
+      header.innerHTML = `<span>${ue}</span><span class="cnt">${groups[ue].length}</span>`;
+      box.appendChild(header);
+      groups[ue].forEach(item=> box.appendChild(buildCourseCard(item.course, item.urgency)));
+    });
+  }else{
+    list.forEach(item=> box.appendChild(buildCourseCard(item.course, item.urgency)));
+  }
+  attachCourseCardEvents(box);
+}
+
+/* =========================================================
+   SAUVEGARDE (export / import JSON)
+   ========================================================= */
+document.getElementById('exportBtn').onclick = ()=>{
+  const data = {};
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    data[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `major-de-promo-sauvegarde-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('importBtn').onclick = ()=> document.getElementById('importFile').click();
+
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      const ok = confirm("Importer ce fichier va remplacer toutes les données actuelles de l'application (cours, QCM, tracker, planning...). Continuer ?");
+      if(!ok){ e.target.value=''; return; }
+      localStorage.clear();
+      Object.keys(data).forEach(k=> localStorage.setItem(k, data[k]));
+      alert('Import réussi. La page va se recharger.');
+      location.reload();
+    }catch(err){
+      alert("Ce fichier n'est pas une sauvegarde valide.");
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* =========================================================
+   ANALYTICS QCM
+   ========================================================= */
+let qcmEntries = [];
+
+function loadQCM(){
+  try{
+    const raw = localStorage.getItem('qcm');
+    qcmEntries = raw ? JSON.parse(raw) : [];
+  }catch(e){ qcmEntries = []; }
+}
+function saveQCM(){
+  try{ localStorage.setItem('qcm', JSON.stringify(qcmEntries)); }catch(e){ console.error(e); }
+}
+
+function qcmStatusFromPct(pct){
+  if(pct < 70) return 'weak';
+  if(pct < 85) return 'fragile';
+  return 'strong';
+}
+
+function qcmStatusForChapter(name){
+  const entries = qcmEntries.filter(e=> e.chapter.toLowerCase()===name.toLowerCase());
+  if(entries.length===0) return null;
+  const total = entries.reduce((s,e)=>s+e.total,0);
+  const correct = entries.reduce((s,e)=>s+e.correct,0);
+  const pct = total ? Math.round((correct/total)*100) : 0;
+  return { pct, status: qcmStatusFromPct(pct) };
+}
+
+document.getElementById('qcmDate').value = todayStr();
+
+document.getElementById('addQCMBtn').onclick = ()=>{
+  const chapter = document.getElementById('qcmChapter').value.trim();
+  let ue = document.getElementById('qcmUE').value.trim();
+  const total = parseInt(document.getElementById('qcmTotal').value);
+  const correct = parseInt(document.getElementById('qcmCorrect').value);
+  const tagsRaw = document.getElementById('qcmTags').value.trim();
+  const date = document.getElementById('qcmDate').value || todayStr();
+  if(!chapter || !total || isNaN(correct) || correct>total){ return; }
+  if(!ue){
+    const matched = courses.find(c=>c.name.toLowerCase()===chapter.toLowerCase());
+    if(matched) ue = matched.ue;
+  }
+  const tags = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+  qcmEntries.push({ id:'q'+Date.now(), date, chapter, ue, total, correct, tags });
+  document.getElementById('qcmChapter').value='';
+  document.getElementById('qcmUE').value='';
+  document.getElementById('qcmTotal').value='';
+  document.getElementById('qcmCorrect').value='';
+  document.getElementById('qcmTags').value='';
+  document.getElementById('qcmDate').value = todayStr();
+  saveQCM();
+  renderQCM();
+};
+
+function renderQCM(){
+  // datalist of known chapters (from Suivi)
+  const datalist = document.getElementById('qcmCourseNames');
+  datalist.innerHTML = courses.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+
+  const totalAll = qcmEntries.reduce((s,e)=>s+e.total,0);
+  const correctAll = qcmEntries.reduce((s,e)=>s+e.correct,0);
+  const globalPct = totalAll ? Math.round((correctAll/totalAll)*100) : null;
+  document.getElementById('qcmGlobalPct').textContent = globalPct===null ? '—' : globalPct+'%';
+  document.getElementById('qcmTotalCount').textContent = totalAll;
+  document.getElementById('qcmEntryCount').textContent = qcmEntries.length;
+
+  // Par UE
+  const ueMap = {};
+  qcmEntries.forEach(e=>{
+    const ue = e.ue || 'Sans UE';
+    if(!ueMap[ue]) ueMap[ue] = { total:0, correct:0 };
+    ueMap[ue].total += e.total;
+    ueMap[ue].correct += e.correct;
+  });
+  const ueBox = document.getElementById('qcmUEBreakdown');
+  const ueKeys = Object.keys(ueMap);
+  if(ueKeys.length===0){
+    ueBox.innerHTML = '<div class="dash-empty">Pas encore de résultats enregistrés.</div>';
+  }else{
+    ueBox.innerHTML = ueKeys.sort((a,b)=>{
+      const pa = ueMap[a].correct/ueMap[a].total, pb = ueMap[b].correct/ueMap[b].total;
+      return pa-pb;
+    }).map(ue=>{
+      const pct = Math.round((ueMap[ue].correct/ueMap[ue].total)*100);
+      const status = qcmStatusFromPct(pct);
+      const color = status==='weak' ? 'var(--brick)' : status==='fragile' ? 'var(--amber)' : 'var(--teal)';
+      return `<div class="ue-row">
+        <div class="ue-top"><span>${ue}</span><b style="color:${color}">${pct}%</b></div>
+        <div class="ue-bar-bg"><div class="ue-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Par chapitre — priorité aux plus faibles
+  const chapMap = {};
+  qcmEntries.forEach(e=>{
+    if(!chapMap[e.chapter]) chapMap[e.chapter] = { total:0, correct:0, ue:e.ue, lastDate:e.date };
+    chapMap[e.chapter].total += e.total;
+    chapMap[e.chapter].correct += e.correct;
+    if(e.date > chapMap[e.chapter].lastDate) chapMap[e.chapter].lastDate = e.date;
+  });
+  const chapBox = document.getElementById('qcmChapterList');
+  const chapKeys = Object.keys(chapMap);
+  if(chapKeys.length===0){
+    chapBox.innerHTML = '<div class="dash-empty">Pas encore de chapitres évalués.</div>';
+  }else{
+    const sorted = chapKeys.map(name=>{
+      const d = chapMap[name];
+      const pct = Math.round((d.correct/d.total)*100);
+      return { name, pct, ue:d.ue, lastDate:d.lastDate, status: qcmStatusFromPct(pct) };
+    }).sort((a,b)=> a.pct - b.pct);
+    chapBox.innerHTML = sorted.map(c=>`
+      <div class="chapter-card ${c.status}">
+        <div class="chapter-top">
+          <div class="chapter-name">${c.name}</div>
+          <div class="chapter-pct ${c.status}">${c.pct}%</div>
+        </div>
+        <div class="chapter-meta">${c.ue||'Sans UE'} · dernière évaluation le ${fmtShort(c.lastDate)}</div>
+      </div>`).join('');
+  }
+
+  // Erreurs récurrentes
+  const tagCounts = {};
+  qcmEntries.forEach(e=> (e.tags||[]).forEach(tag=>{
+    const key = tag.toLowerCase();
+    tagCounts[key] = (tagCounts[key]||0)+1;
+  }));
+  const tagBox = document.getElementById('qcmTagCloud');
+  const tagKeys = Object.keys(tagCounts).sort((a,b)=> tagCounts[b]-tagCounts[a]);
+  tagBox.innerHTML = tagKeys.length===0
+    ? '<div class="dash-empty">Aucune erreur récurrente notée pour l\'instant.</div>'
+    : tagKeys.map(t=>`<div class="tag-chip">${t}<span class="cnt">×${tagCounts[t]}</span></div>`).join('');
+
+  // Journal
+  const journalBox = document.getElementById('qcmJournal');
+  const recent = qcmEntries.slice().sort((a,b)=> b.date.localeCompare(a.date));
+  journalBox.innerHTML = recent.length===0 ? '<div class="dash-empty">Aucune entrée pour l\'instant.</div>' :
+    recent.map(e=>{
+      const pct = Math.round((e.correct/e.total)*100);
+      return `<div class="qcm-journal-item">
+        <span>${fmtShort(e.date)} · <b>${e.chapter}</b> — ${e.correct}/${e.total} (${pct}%)</span>
+        <span class="qj-del" data-qcmdel="${e.id}">✕</span>
+      </div>`;
+    }).join('');
+  journalBox.querySelectorAll('[data-qcmdel]').forEach(el=>{
+    el.onclick = ()=>{
+      qcmEntries = qcmEntries.filter(e=>e.id!==el.dataset.qcmdel);
+      saveQCM();
+      renderQCM();
+    };
+  });
+}
+
+/* =========================================================
+   IMPORT PDF DE L'EDT — EXPÉRIMENTAL
+   ========================================================= */
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+const DAY_NAME_MAP = {
+  'lundi':'lundi', 'mardi':'mardi', 'mercredi':'mercredi', 'jeudi':'jeudi',
+  'vendredi':'vendredi', 'samedi':'samedi', 'dimanche':'dimanche'
+};
+const TIME_RANGE_RE = /(\d{1,2})[h:eEhH](\d{2})?\s*(?:[-–—à]{1,2})\s*(\d{1,2})[h:eEhH](\d{2})?/;
+const DAY_LINE_RE = /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b/i;
+
+let pdfParsedSchedule = null;
+
+document.getElementById('pdfImportToggle').onclick = ()=>{
+  const panel = document.getElementById('pdfImportPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+};
+
+async function extractPdfLines(file){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const lines = [];
+  for(let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    // group text items into lines by approximate Y position
+    const rows = {};
+    content.items.forEach(item=>{
+      const y = Math.round(item.transform[5] / 3) * 3; // bucket to tolerate small offsets
+      if(!rows[y]) rows[y] = [];
+      rows[y].push({ x: item.transform[4], str: item.str });
+    });
+    const ys = Object.keys(rows).map(Number).sort((a,b)=> b-a); // top to bottom
+    ys.forEach(y=>{
+      const lineText = rows[y].sort((a,b)=> a.x-b.x).map(i=>i.str).join(' ').replace(/\s+/g,' ').trim();
+      if(lineText) lines.push(lineText);
+    });
+  }
+  return lines;
+}
+
+function normalizeTime(h1,m1,h2,m2){
+  const p = n => String(n).padStart(2,'0');
+  return `${p(h1)}h${p(m1||'00')}–${p(h2)}h${p(m2||'00')}`;
+}
+
+function parseScheduleFromLines(lines){
+  const result = {};
+  let currentDay = null;
+  lines.forEach(line=>{
+    const dayMatch = line.match(DAY_LINE_RE);
+    if(dayMatch){
+      currentDay = DAY_NAME_MAP[dayMatch[1].toLowerCase()];
+      if(!result[currentDay]) result[currentDay] = [];
+      // in case the day name and first entry share the same line
+      line = line.slice(dayMatch[0].length).trim();
+      if(!line) return;
+    }
+    if(!currentDay) return;
+    const timeMatch = line.match(TIME_RANGE_RE);
+    if(timeMatch){
+      const t = normalizeTime(timeMatch[1], timeMatch[2], timeMatch[3], timeMatch[4]);
+      const title = line.replace(TIME_RANGE_RE, '').replace(/^[\s:.\-–—]+/, '').trim();
+      result[currentDay].push({ t, title: title || '(titre à compléter)' });
+    }
+  });
+  return result;
+}
+
+function renderPdfPreview(parsed){
+  const box = document.getElementById('pdfPreviewArea');
+  const dayKeys = Object.keys(parsed).filter(k=> parsed[k].length>0);
+  if(dayKeys.length===0){
+    box.innerHTML = '<div class="empty">Aucun jour/horaire détecté dans ce PDF. Le format n\'est probablement pas compatible avec cet import (grille/tableau au lieu d\'un agenda texte).</div>';
+    return;
+  }
+  let html = '';
+  dayKeys.forEach(dayKey=>{
+    const meta = DAY_META.find(d=>d.key===dayKey);
+    html += `<div class="dash-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <b>${meta ? meta.label : dayKey}</b>
+        <label style="font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;">
+          <input type="checkbox" class="pdfApplyDay" data-pdfday="${dayKey}" checked> remplacer ce jour
+        </label>
+      </div>`;
+    parsed[dayKey].forEach((b,idx)=>{
+      html += `<div style="display:flex;gap:6px;margin-bottom:6px;">
+        <input type="text" class="pdfBlockTime" data-pdfday2="${dayKey}" data-pdfidx="${idx}" value="${b.t}" style="width:130px;padding:6px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <input type="text" class="pdfBlockTitle" data-pdfday2="${dayKey}" data-pdfidx="${idx}" value="${b.title.replace(/"/g,'&quot;')}" style="flex:1;padding:6px 8px;border-radius:6px;border:1.5px solid var(--paper-line);font-size:12px;">
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<div style="display:flex;gap:8px;">
+    <button class="add-btn" style="flex:1;" id="pdfApplyBtn">✅ Appliquer les jours cochés</button>
+    <button class="add-btn" style="flex:1;background:var(--ink-soft);" id="pdfCancelBtn">✕ Annuler</button>
+  </div>`;
+  box.innerHTML = html;
+
+  box.querySelectorAll('.pdfBlockTime, .pdfBlockTitle').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const dayKey = inp.dataset.pdfday2;
+      const idx = Number(inp.dataset.pdfidx);
+      if(inp.classList.contains('pdfBlockTime')) pdfParsedSchedule[dayKey][idx].t = inp.value;
+      else pdfParsedSchedule[dayKey][idx].title = inp.value;
+    });
+  });
+
+  document.getElementById('pdfApplyBtn').onclick = ()=>{
+    const checked = [...box.querySelectorAll('.pdfApplyDay:checked')].map(c=>c.dataset.pdfday);
+    if(checked.length===0){ return; }
+    const ok = confirm(`Remplacer l'emploi du temps de ${checked.length} jour(s) par le contenu importé ? Tes modifications actuelles sur ces jours seront perdues (le tracker garde son historique par ancien identifiant, donc les cases cochées sur ces jours repartiront à zéro).`);
+    if(!ok) return;
+    checked.forEach(dayKey=>{
+      scheduleData[dayKey] = pdfParsedSchedule[dayKey].map((b,idx)=>({
+        id: dayKey+'-pdf-'+Date.now()+'-'+idx, t:b.t, title:b.title, detail:''
+      }));
+    });
+    saveScheduleData();
+    document.getElementById('pdfImportPanel').style.display = 'none';
+    document.getElementById('pdfPreviewArea').innerHTML = '';
+    document.getElementById('pdfImportStatus').textContent = '';
+    document.getElementById('pdfFileInput').value = '';
+    renderSchedule();
+  };
+  document.getElementById('pdfCancelBtn').onclick = ()=>{
+    pdfParsedSchedule = null;
+    document.getElementById('pdfPreviewArea').innerHTML = '';
+  };
+}
+
+document.getElementById('pdfFileInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const status = document.getElementById('pdfImportStatus');
+  status.textContent = 'Lecture du PDF...';
+  document.getElementById('pdfPreviewArea').innerHTML = '';
+  try{
+    const lines = await extractPdfLines(file);
+    status.textContent = `${lines.length} lignes de texte extraites. Analyse en cours...`;
+    pdfParsedSchedule = parseScheduleFromLines(lines);
+    const totalBlocks = Object.values(pdfParsedSchedule).reduce((s,arr)=>s+arr.length,0);
+    status.textContent = totalBlocks>0
+      ? `${totalBlocks} créneau(x) détecté(s). Vérifie et corrige avant d'appliquer.`
+      : `Aucun créneau détecté automatiquement — ce PDF est probablement en grille/tableau plutôt qu'en agenda texte.`;
+    renderPdfPreview(pdfParsedSchedule);
+  }catch(err){
+    console.error(err);
+    status.textContent = "Erreur de lecture — ce fichier n'est peut-être pas un PDF texte valide.";
+  }
+});
+
+/* =========================================================
+   STAGES
+   ========================================================= */
+let stages = [];
+let stageExpanded = {};
+let journalDayOpen = {};
+let journalFilter = {};
+const JOURNAL_TYPES = ['Journal quotidien', 'Acte observé', 'Acte réalisé', 'Situation clinique', 'Transmission'];
+
+function loadStages(){
+  try{
+    const raw = localStorage.getItem('stages');
+    stages = raw ? JSON.parse(raw) : [];
+  }catch(e){ stages = []; }
+}
+function saveStages(){
+  try{ localStorage.setItem('stages', JSON.stringify(stages)); }catch(e){ console.error(e); }
+}
+
+document.getElementById('addStageBtn').onclick = ()=>{
+  const etablissement = document.getElementById('stageEtab').value.trim();
+  const service = document.getElementById('stageService').value.trim();
+  const dateDebut = document.getElementById('stageDateDebut').value;
+  const dateFin = document.getElementById('stageDateFin').value;
+  const horaires = document.getElementById('stageHoraires').value.trim();
+  if(!etablissement || !dateDebut) return;
+  const id = 'stage'+Date.now();
+  stages.unshift({
+    id, etablissement, service, dateDebut, dateFin: dateFin||dateDebut, horaires,
+    objectifs:'', bilan:'', journal:[], questions:[], coursLies:[]
+  });
+  document.getElementById('stageEtab').value='';
+  document.getElementById('stageService').value='';
+  document.getElementById('stageDateDebut').value='';
+  document.getElementById('stageDateFin').value='';
+  document.getElementById('stageHoraires').value='';
+  stageExpanded[id] = true;
+  saveStages();
+  renderStages();
+};
+
+function stageStatus(stage){
+  const today = todayStr();
+  if(today < stage.dateDebut) return 'due';
+  if(today > stage.dateFin) return 'complete';
+  return 'ontrack';
+}
+function stageStatusLabel(status){
+  return status==='due' ? 'à venir' : status==='complete' ? 'terminé' : 'en cours';
+}
+
+function buildStageCard(stage){
+  const status = stageStatus(stage);
+  const card = document.createElement('div');
+  card.className = 'course-card ' + status + (stageExpanded[stage.id] ? ' expanded' : '');
+
+  const journalOptions = JOURNAL_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const jFilter = journalFilter[stage.id] || '';
+  const fmtLong = ds => { try{ return new Date(ds+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }catch(e){ return ds; } };
+  const entries = stage.journal.filter(j=> !jFilter || j.type===jFilter);
+  const groups = {};
+  entries.forEach(j=>{ (groups[j.date] = groups[j.date] || []).push(j); });
+  const days = Object.keys(groups).sort((a,b)=> b.localeCompare(a));
+  const journalHtml = days.map(d=>{
+    const key = stage.id+'|'+d;
+    const open = (journalDayOpen[key] !== undefined) ? journalDayOpen[key] : true;
+    const items = groups[d].slice().sort((a,b)=> a.id.localeCompare(b.id));
+    const types = [...new Set(items.map(j=>j.type))].join(' · ');
+    return `<div class="jday ${open?'open':''}">
+      <div class="jday-head" data-jdaytoggle="${key}">
+        <span class="jd-date">${fmtLong(d)}</span>
+        <span class="jd-meta"><span>${types}</span><span class="jd-count">${items.length}</span><span class="jd-chev">▾</span></span>
+      </div>
+      <div class="jday-body">${items.map(j=>`
+        <div class="journal-item">
+          <div class="ji-top"><span class="ji-type">${j.type}</span><span class="ji-del" data-jdel="${stage.id}|${j.id}">✕</span></div>
+          <div>${j.texte.replace(/</g,'&lt;')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('') || `<div class="dash-empty">${jFilter ? 'Aucune entrée de ce type.' : 'Rien noté pour l\'instant.'}</div>`;
+  const filterHtml = stage.journal.length>1 ? `<div class="journal-filter"><select data-jfilter="${stage.id}"><option value="">Tous les types (${stage.journal.length})</option>${JOURNAL_TYPES.map(t=>`<option value="${t}" ${t===jFilter?'selected':''}>${t}</option>`).join('')}</select></div>` : '';
+
+  const questionsHtml = stage.questions.map(q=>`
+    <div class="question-item ${q.done?'done':''}">
+      <div class="checkbox" data-qtoggle="${stage.id}|${q.id}" style="cursor:pointer;">${q.done?'✓':''}</div>
+      <div class="q-text">${q.texte.replace(/</g,'&lt;')}</div>
+      <div class="q-del" data-qdel="${stage.id}|${q.id}">✕</div>
+    </div>`).join('') || '<div class="dash-empty">Aucune question notée.</div>';
+
+  const linkedHtml = (stage.coursLies||[]).map(name=>`<div class="tag-chip linked">${name}</div>`).join('') || '';
+
+  card.innerHTML = `
+    <div class="course-header" data-stagetoggle="${stage.id}">
+      <div>
+        <div class="course-name">${stage.etablissement}${stage.service?' — '+stage.service:''}</div>
+        <div class="course-meta-line"><span>${fmtShort(stage.dateDebut)} → ${fmtShort(stage.dateFin)}</span>${stage.horaires?`<span>${stage.horaires}</span>`:''}<span>${stageStatusLabel(status)}</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:4px;">
+        <div class="icon-btn" data-stagedel="${stage.id}">✕</div>
+        <div class="chev">▾</div>
+      </div>
+    </div>
+    <div class="course-body">
+      <div class="stage-section">
+        <div class="stage-section-label">Objectifs & compétences à travailler</div>
+        <textarea class="notes-area" data-stagefield="objectifs" data-stage="${stage.id}" placeholder="Objectifs du stage, compétences à valider...">${stage.objectifs||''}</textarea>
+      </div>
+
+      <div class="stage-section">
+        <div class="stage-section-label">Journal & observations</div>
+        <div class="journal-add">
+          <div class="journal-add-row">
+            <select class="jType">${journalOptions}</select>
+            <input type="date" class="jDate" value="${todayStr()}">
+          </div>
+          <textarea class="jTexte" placeholder="Ce qui s'est passé, ce que tu as observé ou fait..."></textarea>
+          <button class="add-btn" data-jaddstage="${stage.id}">+ Ajouter au journal</button>
+        </div>
+        ${filterHtml}
+        ${journalHtml}
+      </div>
+
+      <div class="stage-section">
+        <div class="stage-section-label">Questions à rechercher après le stage</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <input type="text" class="qInput" placeholder="Ex: mécanisme d'action de l'héparine" style="flex:1;padding:8px 10px;border-radius:7px;border:1.5px solid var(--paper-line);background:var(--bg);font-size:12.5px;">
+          <button class="add-btn" data-qaddstage="${stage.id}">+</button>
+        </div>
+        ${questionsHtml}
+      </div>
+
+      <div class="stage-section">
+        <div class="stage-section-label">Cours / fiches liés</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <input type="text" class="linkInput" list="qcmCourseNames" placeholder="Nom d'un cours du Suivi" style="flex:1;padding:8px 10px;border-radius:7px;border:1.5px solid var(--paper-line);background:var(--bg);font-size:12.5px;">
+          <button class="add-btn" data-linkaddstage="${stage.id}">+</button>
+        </div>
+        <div class="tag-cloud">${linkedHtml}</div>
+      </div>
+
+      <div class="stage-section">
+        <div class="stage-section-label">Bilan de fin de stage</div>
+        <textarea class="notes-area" data-stagefield="bilan" data-stage="${stage.id}" placeholder="Ce que tu retiens, ce qui a été validé, ce qu'il reste à travailler...">${stage.bilan||''}</textarea>
+      </div>
+    </div>`;
+  return card;
+}
+
+function attachStageCardEvents(box){
+  box.querySelectorAll('[data-stagetoggle]').forEach(h=>{
+    h.onclick = (e)=>{
+      if(e.target.closest('.icon-btn')) return;
+      stageExpanded[h.dataset.stagetoggle] = !stageExpanded[h.dataset.stagetoggle];
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-stagedel]').forEach(el=>{
+    el.onclick = (e)=>{ e.stopPropagation(); stages = stages.filter(s=>s.id!==el.dataset.stagedel); saveStages(); renderStages(); };
+  });
+  box.querySelectorAll('[data-stagefield]').forEach(area=>{
+    area.addEventListener('click', e=> e.stopPropagation());
+    area.addEventListener('input', e=>{
+      const stage = stages.find(s=>s.id===area.dataset.stage);
+      stage[area.dataset.stagefield] = e.target.value;
+    });
+    area.addEventListener('blur', ()=> saveStages());
+  });
+  box.querySelectorAll('[data-jdaytoggle]').forEach(h=>{
+    h.onclick = (e)=>{
+      e.stopPropagation();
+      const k = h.dataset.jdaytoggle;
+      const wasOpen = h.parentElement.classList.contains('open');
+      journalDayOpen[k] = !wasOpen;
+      h.parentElement.classList.toggle('open', !wasOpen);
+    };
+  });
+  box.querySelectorAll('[data-jfilter]').forEach(sel=>{
+    sel.onclick = e=> e.stopPropagation();
+    sel.onchange = (e)=>{ e.stopPropagation(); journalFilter[sel.dataset.jfilter] = sel.value; renderStages(); };
+  });
+  box.querySelectorAll('[data-jaddstage]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const body = btn.closest('.course-body');
+      const type = body.querySelector('.jType').value;
+      const date = body.querySelector('.jDate').value || todayStr();
+      const texte = body.querySelector('.jTexte').value.trim();
+      if(!texte) return;
+      const stage = stages.find(s=>s.id===btn.dataset.jaddstage);
+      stage.journal.push({ id:'j'+Date.now(), type, date, texte });
+      saveStages();
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-jdel]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const [stageId, jId] = el.dataset.jdel.split('|');
+      const stage = stages.find(s=>s.id===stageId);
+      stage.journal = stage.journal.filter(j=>j.id!==jId);
+      saveStages();
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-qaddstage]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const body = btn.closest('.course-body');
+      const input = body.querySelector('.qInput');
+      if(!input.value.trim()) return;
+      const stage = stages.find(s=>s.id===btn.dataset.qaddstage);
+      stage.questions.push({ id:'q'+Date.now(), texte:input.value.trim(), done:false });
+      saveStages();
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-qtoggle]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const [stageId, qId] = el.dataset.qtoggle.split('|');
+      const stage = stages.find(s=>s.id===stageId);
+      const q = stage.questions.find(x=>x.id===qId);
+      q.done = !q.done;
+      saveStages();
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-qdel]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const [stageId, qId] = el.dataset.qdel.split('|');
+      const stage = stages.find(s=>s.id===stageId);
+      stage.questions = stage.questions.filter(x=>x.id!==qId);
+      saveStages();
+      renderStages();
+    };
+  });
+  box.querySelectorAll('[data-linkaddstage]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const body = btn.closest('.course-body');
+      const input = body.querySelector('.linkInput');
+      if(!input.value.trim()) return;
+      const stage = stages.find(s=>s.id===btn.dataset.linkaddstage);
+      if(!stage.coursLies.includes(input.value.trim())) stage.coursLies.push(input.value.trim());
+      input.value = '';
+      saveStages();
+      renderStages();
+    };
+  });
+}
+
+function renderStages(){
+  const box = document.getElementById('stagesList');
+  box.innerHTML = '';
+  if(stages.length===0){ box.innerHTML = '<div class="empty">Aucun stage ajouté pour le moment.</div>'; return; }
+  const sorted = stages.slice().sort((a,b)=> a.dateDebut.localeCompare(b.dateDebut));
+  sorted.forEach(s=> box.appendChild(buildStageCard(s)));
+  attachStageCardEvents(box);
+}
+
+/* =========================================================
+   TD (Travaux Dirigés)
+   ========================================================= */
+let tdItems = [];
+let tdExpanded = {};
+
+function loadTD(){
+  try{
+    const raw = localStorage.getItem('td');
+    tdItems = raw ? JSON.parse(raw) : [];
+  }catch(e){ tdItems = []; }
+}
+function saveTD(){
+  try{ localStorage.setItem('td', JSON.stringify(tdItems)); }catch(e){ console.error(e); }
+}
+
+const TD_CATEGORY_LABELS = { suivi_pedagogique:'Suivi pédagogique', td_simple:'TD simple' };
+let tdFilter = 'all';
+let tdGroupByUE = false;
+
+document.getElementById('tdDate').value = todayStr();
+
+document.getElementById('addTDBtn').onclick = ()=>{
+  const name = document.getElementById('tdName').value.trim();
+  const ue = document.getElementById('tdUE').value.trim();
+  const category = document.getElementById('tdCategory').value;
+  const date = document.getElementById('tdDate').value || todayStr();
+  if(!name) return;
+  tdItems.unshift({ id:'td'+Date.now(), name, ue, category, date, status:'a_preparer', notes:'' });
+  document.getElementById('tdName').value='';
+  document.getElementById('tdUE').value='';
+  document.getElementById('tdDate').value = todayStr();
+  saveTD();
+  renderTD();
+};
+
+document.querySelectorAll('#tdFilterRow .filter-chip').forEach(chip=>{
+  chip.onclick = ()=>{
+    document.querySelectorAll('#tdFilterRow .filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    tdFilter = chip.dataset.tdf;
+    renderTD();
+  };
+});
+document.getElementById('tdGroupToggle').onclick = ()=>{
+  tdGroupByUE = !tdGroupByUE;
+  document.getElementById('tdGroupToggle').classList.toggle('active', tdGroupByUE);
+  renderTD();
+};
+
+function buildTDCard(td){
+  const card = document.createElement('div');
+  card.className = 'course-card ' + (td.status==='fait' ? 'complete' : 'due') + (tdExpanded[td.id] ? ' expanded' : '');
+  card.innerHTML = `
+    <div class="course-header" data-tdtoggle="${td.id}">
+      <div>
+        <div class="course-name">${td.name} ${td.status==='fait'?'<span class="badge-complete">✓ fait</span>':''}</div>
+        ${td.ue?`<div class="course-ue">${td.ue}</div>`:''}
+        <div class="course-meta-line"><span>${fmtShort(td.date)}</span><span>${TD_CATEGORY_LABELS[td.category]||''}</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:4px;">
+        <div class="icon-btn" data-tddel="${td.id}">✕</div>
+        <div class="chev">▾</div>
+      </div>
+    </div>
+    <div class="course-body">
+      <button class="add-btn" style="width:100%;margin-bottom:10px;" data-tdstatus="${td.id}">${td.status==='fait' ? '↺ Remettre à préparer' : '✅ Marquer comme fait'}</button>
+      <div class="notes-label">Notes</div>
+      <textarea class="notes-area" data-tdnotes="${td.id}" placeholder="Ce qu'il faut réviser avant, points à revoir après...">${td.notes||''}</textarea>
+    </div>`;
+  return card;
+}
+
+function attachTDCardEvents(box){
+  box.querySelectorAll('[data-tdtoggle]').forEach(h=>{
+    h.onclick = (e)=>{
+      if(e.target.closest('.icon-btn')) return;
+      tdExpanded[h.dataset.tdtoggle] = !tdExpanded[h.dataset.tdtoggle];
+      renderTD();
+    };
+  });
+  box.querySelectorAll('[data-tddel]').forEach(el=>{
+    el.onclick = (e)=>{ e.stopPropagation(); tdItems = tdItems.filter(t=>t.id!==el.dataset.tddel); saveTD(); renderTD(); };
+  });
+  box.querySelectorAll('[data-tdstatus]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const td = tdItems.find(t=>t.id===btn.dataset.tdstatus);
+      td.status = td.status==='fait' ? 'a_preparer' : 'fait';
+      saveTD();
+      renderTD();
+    };
+  });
+  box.querySelectorAll('[data-tdnotes]').forEach(area=>{
+    area.addEventListener('click', e=> e.stopPropagation());
+    area.addEventListener('input', e=>{ tdItems.find(t=>t.id===area.dataset.tdnotes).notes = e.target.value; });
+    area.addEventListener('blur', ()=> saveTD());
+  });
+}
+
+function renderTD(){
+  document.getElementById('tdStatTotal').textContent = tdItems.length;
+  document.getElementById('tdStatTodo').textContent = tdItems.filter(t=>t.status==='a_preparer').length;
+  document.getElementById('tdStatDone').textContent = tdItems.filter(t=>t.status==='fait').length;
+
+  const box = document.getElementById('tdList');
+  box.innerHTML = '';
+
+  let list = tdItems.slice();
+  if(tdFilter!=='all') list = list.filter(t=> t.category===tdFilter);
+  if(list.length===0){ box.innerHTML = '<div class="empty">Aucun TD ici pour le moment.</div>'; return; }
+
+  list.sort((a,b)=>{
+    if(a.status!==b.status) return a.status==='a_preparer' ? -1 : 1;
+    return a.date.localeCompare(b.date);
+  });
+
+  if(tdGroupByUE){
+    const groups = {}, order = [];
+    list.forEach(td=>{
+      const ue = td.ue || 'Sans UE';
+      if(!groups[ue]){ groups[ue]=[]; order.push(ue); }
+      groups[ue].push(td);
+    });
+    order.forEach(ue=>{
+      const header = document.createElement('div');
+      header.className = 'group-header';
+      header.innerHTML = `<span>${ue}</span><span class="cnt">${groups[ue].length}</span>`;
+      box.appendChild(header);
+      groups[ue].forEach(td=> box.appendChild(buildTDCard(td)));
+    });
+  }else{
+    list.forEach(td=> box.appendChild(buildTDCard(td)));
+  }
+
+  attachTDCardEvents(box);
+}
+
+/* =========================================================
+   DASHBOARD "AUJOURD'HUI"
+   ========================================================= */
+const DASH_MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const DASH_DAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+
+function loadDashState(){
+  try{
+    const raw = localStorage.getItem('dash:'+todayStr());
+    return raw ? JSON.parse(raw) : { goal:'', workDone:'', workGoal:'' };
+  }catch(e){ return { goal:'', workDone:'', workGoal:'' }; }
+}
+function saveDashState(state){
+  try{ localStorage.setItem('dash:'+todayStr(), JSON.stringify(state)); }catch(e){}
+}
+
+function computeStreak(){
+  // consecutive days (ending today or yesterday) with at least one revision logged in Suivi
+  const datesWithActivity = new Set();
+  courses.forEach(c=> c.revisions.forEach(r=> datesWithActivity.add(r.date)));
+  let streak = 0;
+  let cursor = todayStr();
+  // allow today to be empty without breaking the streak from yesterday
+  if(!datesWithActivity.has(cursor)) cursor = addDaysStr(cursor, -1);
+  while(datesWithActivity.has(cursor)){
+    streak++;
+    cursor = addDaysStr(cursor, -1);
+  }
+  return streak;
+}
+
+/* ===== Next Action ("Que faire maintenant ?") ===== */
+let nextActionSkip = new Set();
+
+function methodForCP(cpKey){
+  if(cpKey==='j0') return 'Fiche de Flux';
+  if(cpKey==='j3') return 'Tableau Blanc J+3';
+  return 'Spaced Repetition';
+}
+
+function buildNextActionQueue(){
+  const today = todayStr();
+  const queue = [];
+
+  // 1. Overdue revisions, oldest deadline first
+  const overdue = courses.map(c=>({ course:c, urgency: courseUrgency(c) }))
+    .filter(x=> x.urgency.status==='overdue')
+    .sort((a,b)=> a.urgency.sortDate.localeCompare(b.urgency.sortDate));
+  overdue.forEach(x=>{
+    const nd = nextDueCheckpoint(x.course);
+    if(!nd) return;
+    const days = Math.round((new Date(today) - new Date(nd.target)) / 86400000);
+    queue.push({
+      id:'rev-'+x.course.id+'-'+nd.cp.key, type:'revision',
+      course:x.course, cp:nd.cp,
+      title: x.course.name,
+      reason: `🔴 Révision ${nd.cp.label} en retard de ${days} jour${days!==1?'s':''}`,
+      minutes: nd.cp.minutes
+    });
+  });
+
+  // 2. Weak QCM chapters (<70%)
+  const chapMap = {};
+  qcmEntries.forEach(e=>{
+    if(!chapMap[e.chapter]) chapMap[e.chapter] = { total:0, correct:0 };
+    chapMap[e.chapter].total += e.total;
+    chapMap[e.chapter].correct += e.correct;
+  });
+  const weakChapters = Object.keys(chapMap).map(name=>{
+    const d = chapMap[name];
+    return { name, pct: Math.round((d.correct/d.total)*100) };
+  }).filter(c=> c.pct < 70).sort((a,b)=> a.pct-b.pct);
+  weakChapters.forEach(c=>{
+    queue.push({
+      id:'qcm-'+c.name, type:'qcm',
+      title: c.name,
+      reason: `🟡 Chapitre faible en QCM (${c.pct}%)`,
+      minutes: 30
+    });
+  });
+
+  // 3. Due today revisions
+  const due = courses.map(c=>({ course:c, urgency: courseUrgency(c) }))
+    .filter(x=> x.urgency.status==='due')
+    .sort((a,b)=> a.urgency.sortDate.localeCompare(b.urgency.sortDate));
+  due.forEach(x=>{
+    const nd = nextDueCheckpoint(x.course);
+    if(!nd) return;
+    queue.push({
+      id:'due-'+x.course.id+'-'+nd.cp.key, type:'revision',
+      course:x.course, cp:nd.cp,
+      title: x.course.name,
+      reason: `🟠 Révision ${nd.cp.label} due aujourd'hui`,
+      minutes: nd.cp.minutes
+    });
+  });
+
+  return queue.filter(item=> !nextActionSkip.has(item.id));
+}
+
+function renderNextAction(){
+  const box = document.getElementById('nextActionBox');
+  const queue = buildNextActionQueue();
+
+  if(queue.length===0){
+    box.innerHTML = `<div class="next-action-card empty">
+      <div class="na-tag">🎯 NEXT ACTION</div>
+      <div class="na-title">Rien d'urgent pour l'instant</div>
+      <div class="na-reason">Pas de retard, pas de chapitre faible signalé. Continue ton programme normalement, ou avance sur un cours à jour.</div>
+    </div>`;
+    return;
+  }
+
+  const item = queue[0];
+  box.innerHTML = `<div class="next-action-card">
+    <div class="na-tag">🎯 NEXT ACTION</div>
+    <div class="na-title">${item.title}</div>
+    <div class="na-reason">${item.reason}</div>
+    <div class="na-meta">⏱️ Durée estimée : ${item.minutes} min</div>
+    <div class="na-actions">
+      ${item.type==='revision' ? `<button class="na-btn primary" id="naDoneBtn">✅ Marquer fait</button>` : ''}
+      <button class="na-btn secondary" id="naSkipBtn">🔄 Autre suggestion</button>
+    </div>
+  </div>`;
+
+  const doneBtn = document.getElementById('naDoneBtn');
+  if(doneBtn){
+    doneBtn.onclick = ()=>{
+      item.course.checkpoints[item.cp.key] = true;
+      item.course.revisions.push({ date: todayStr(), method: methodForCP(item.cp.key), note:'' });
+      saveCourses();
+      renderNextAction();
+      // keep the rest of the dashboard in sync
+      const list = courses.map(c=>({ course:c, urgency: courseUrgency(c) })).filter(x=> x.urgency.status==='overdue' || x.urgency.status==='due');
+      document.getElementById('dashRevCount').textContent = list.length;
+    };
+  }
+  document.getElementById('naSkipBtn').onclick = ()=>{
+    nextActionSkip.add(item.id);
+    renderNextAction();
+  };
+}
+
+function renderDashboard(){
+  renderNextAction();
+  const now = new Date();
+  document.getElementById('dashDate').textContent = DASH_DAYS[now.getDay()].toUpperCase()+' '+now.getDate()+' '+DASH_MONTHS[now.getMonth()].toUpperCase();
+
+  const state = loadDashState();
+  const goalInput = document.getElementById('dashGoal');
+  const workDone = document.getElementById('dashWorkDone');
+  const workGoal = document.getElementById('dashWorkGoal');
+  if(document.activeElement !== goalInput) goalInput.value = state.goal || '';
+  if(document.activeElement !== workDone) workDone.value = state.workDone || '';
+  if(document.activeElement !== workGoal) workGoal.value = state.workGoal || '';
+
+  const urgencyList = courses.map(c=>({ course:c, urgency: courseUrgency(c) }))
+    .filter(x=> x.urgency.status==='overdue' || x.urgency.status==='due');
+  urgencyList.sort((a,b)=>{
+    if(a.urgency.status!==b.urgency.status) return a.urgency.status==='overdue' ? -1 : 1;
+    return a.urgency.sortDate.localeCompare(b.urgency.sortDate);
+  });
+
+  document.getElementById('dashRevCount').textContent = urgencyList.length;
+
+  // UE prioritaire = UE with most overdue/due courses
+  const ueCounts = {};
+  urgencyList.forEach(x=>{ const ue = x.course.ue || 'Sans UE'; ueCounts[ue] = (ueCounts[ue]||0)+1; });
+  let topUE = '—';
+  let topCount = 0;
+  Object.keys(ueCounts).forEach(ue=>{ if(ueCounts[ue]>topCount){ topCount=ueCounts[ue]; topUE=ue; } });
+  document.getElementById('dashUE').textContent = topUE;
+
+  document.getElementById('dashStreak').textContent = computeStreak();
+
+  const revBox = document.getElementById('dashRevList');
+  if(urgencyList.length===0){
+    revBox.innerHTML = '<div class="dash-empty">Rien en retard ni dû aujourd\'hui. 👍</div>';
+  }else{
+    revBox.innerHTML = urgencyList.slice(0,6).map(x=>{
+      const nd = nextDueCheckpoint(x.course);
+      const label = nd ? nd.cp.label : '';
+      return `<div class="dash-list-item">
+        <span class="nm">${x.course.name} <span style="color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:10px;">${label}</span></span>
+        <span class="st ${x.urgency.status}">${x.urgency.status==='overdue'?'en retard':"aujourd'hui"}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+document.getElementById('dashGoal').addEventListener('input', e=>{
+  const s = loadDashState(); s.goal = e.target.value; saveDashState(s);
+});
+document.getElementById('dashWorkDone').addEventListener('input', e=>{
+  const s = loadDashState(); s.workDone = e.target.value; saveDashState(s);
+  renderDashboard();
+});
+document.getElementById('dashWorkGoal').addEventListener('input', e=>{
+  const s = loadDashState(); s.workGoal = e.target.value; saveDashState(s);
+});
+
+/* =========================================================
+   GÉNÉRATEUR DE PLANNING
+   ========================================================= */
+function minutesToHHMM(totalMin){
+  const h = Math.floor(totalMin/60)%24;
+  const m = totalMin%60;
+  return String(h).padStart(2,'0')+'h'+String(m).padStart(2,'0');
+}
+
+function generatePlanning(){
+  const startStr = document.getElementById('planStart').value || '08:00';
+  const [sh, sm] = startStr.split(':').map(Number);
+  let cursorMin = sh*60+sm;
+  const availableMin = Math.round((parseFloat(document.getElementById('planHours').value)||0)*60);
+  const newCoursesCount = parseInt(document.getElementById('planNewCourses').value)||0;
+  const qcmCount = parseInt(document.getElementById('planQCM').value)||0;
+
+  // Build priority queue: overdue revisions, due-today revisions, new courses, QCM
+  const today = todayStr();
+  const revItems = courses.map(c=>({ course:c, urgency: courseUrgency(c) }))
+    .filter(x=> x.urgency.status==='overdue' || x.urgency.status==='due')
+    .sort((a,b)=>{
+      if(a.urgency.status!==b.urgency.status) return a.urgency.status==='overdue' ? -1 : 1;
+      return a.urgency.sortDate.localeCompare(b.urgency.sortDate);
+    });
+
+  const queue = [];
+  revItems.forEach(x=>{
+    const nd = nextDueCheckpoint(x.course);
+    const minutes = nd ? nd.cp.minutes : 15;
+    queue.push({
+      label: `${x.course.name}${nd ? ' — '+nd.cp.label : ''}`,
+      tag: x.urgency.status==='overdue' ? 'Révision en retard' : 'Révision due',
+      cls: x.urgency.status,
+      minutes
+    });
+  });
+  for(let i=0;i<newCoursesCount;i++){
+    queue.push({ label:`Nouveau cours ${i+1}`, tag:'Premier passage (J+0)', cls:'new', minutes:60 });
+  }
+  if(qcmCount>0){
+    queue.push({ label:`${qcmCount} QCM`, tag:'Entraînement QCM', cls:'qcm', minutes:Math.round(qcmCount*0.5) });
+  }
+
+  const placed = [];
+  let remaining = availableMin;
+  let overflowMin = 0;
+  queue.forEach(item=>{
+    if(remaining >= item.minutes){
+      placed.push(item);
+      remaining -= item.minutes;
+    }else if(remaining > 5){
+      // partial slot for whatever's left
+      placed.push({ ...item, minutes: remaining, partial:true });
+      overflowMin += (item.minutes - remaining);
+      remaining = 0;
+    }else{
+      overflowMin += item.minutes;
+    }
+  });
+
+  const output = document.getElementById('planOutput');
+  if(placed.length===0){
+    output.innerHTML = '<div class="empty">Rien à planifier — ajoute des cours dans le Suivi ou augmente le temps disponible.</div>';
+    return;
+  }
+
+  let html = '';
+  placed.forEach(item=>{
+    const startLabel = minutesToHHMM(cursorMin);
+    cursorMin += item.minutes;
+    const endLabel = minutesToHHMM(cursorMin);
+    html += `<div class="plan-block ${item.cls}">
+      <div class="plan-time">${startLabel}–${endLabel}</div>
+      <div>
+        <div class="plan-title">${item.label}${item.partial?' (partiel)':''}</div>
+        <div class="plan-tag">${item.tag} · ${item.minutes} min</div>
+      </div>
+    </div>`;
+  });
+  if(overflowMin>0){
+    html += `<div class="plan-overflow">⚠ Il reste environ ${Math.round(overflowMin/60*10)/10} h de travail qui ne rentrent pas dans le temps disponible aujourd'hui. Priorise ce qui est en retard, et reporte le reste demain.</div>`;
+  }
+  output.innerHTML = html;
+}
+
+document.getElementById('planGenBtn').onclick = generatePlanning;
+
+loadCourses();
+loadStages();
+loadTD();
+loadQCM();
+loadHeader();
+render();
+</script>
+
+<script>
+/* ===== Rappels (notifications locales) ===== */
+(function(){
+  const btn = document.getElementById('notifBtn');
+  const timeInput = document.getElementById('notifTime');
+  const status = document.getElementById('notifStatus');
+  if(!btn) return;
+  const supported = 'Notification' in window && 'serviceWorker' in navigator;
+  const get = (k,d)=>{ try{ return localStorage.getItem(k) ?? d; }catch(e){ return d; } };
+  const set = (k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+
+  function refreshUI(){
+    if(!supported){ btn.disabled = true; btn.textContent = 'Non supporté sur ce navigateur'; return; }
+    const on = get('notifEnabled','0')==='1' && Notification.permission==='granted';
+    btn.textContent = on ? '🔕 Désactiver les rappels' : '🔔 Activer les rappels';
+    timeInput.value = get('notifTime','08:00');
+    if(Notification.permission==='denied') status.textContent = 'Notifications bloquées : autorise-les dans les réglages du navigateur / de l\'app.';
+  }
+
+  async function checkReminders(force){
+    if(!supported || get('notifEnabled','0')!=='1' || Notification.permission!=='granted') return;
+    const today = todayStr();
+    if(!force && get('notifLastDay','')===today) return;
+    const now = new Date();
+    const [h,m] = get('notifTime','08:00').split(':').map(Number);
+    if(!force && (now.getHours()*60+now.getMinutes()) < h*60+m) return;
+    let overdue=0, due=0;
+    courses.forEach(c=>{ const u=courseUrgency(c); if(u.status==='overdue') overdue++; else if(u.status==='due') due++; });
+    if(!force && overdue+due===0) return;
+    const body = (overdue+due===0) ? 'Aucune révision due aujourd\'hui. 👌'
+      : [due?due+' à réviser aujourd\'hui':'', overdue?overdue+' en retard':''].filter(Boolean).join(' · ');
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification('Programme Major — Révisions', { body, icon:'icon-192.png', badge:'icon-192.png', tag:'revisions-du-jour', data:{url:'./'} });
+      set('notifLastDay', today);
+    }catch(e){ console.error(e); }
+  }
+
+  btn.onclick = async ()=>{
+    if(!supported) return;
+    const on = get('notifEnabled','0')==='1' && Notification.permission==='granted';
+    if(on){ set('notifEnabled','0'); refreshUI(); status.textContent = 'Rappels désactivés.'; return; }
+    const perm = await Notification.requestPermission();
+    if(perm==='granted'){
+      set('notifEnabled','1'); set('notifLastDay','');
+      refreshUI(); status.textContent = 'Rappels activés. Une notification de test vient d\'être envoyée.';
+      checkReminders(true);
+    } else { refreshUI(); }
+  };
+  timeInput.onchange = ()=>{ set('notifTime', timeInput.value || '08:00'); set('notifLastDay',''); checkReminders(false); };
+
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') checkReminders(false); });
+  setInterval(()=>checkReminders(false), 15*60*1000);
+  window.addEventListener('load', ()=> setTimeout(()=>checkReminders(false), 1500));
+  refreshUI();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
